@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@domain/*": ["src/app/domain/*"],
+      "@entities/*": ["src/app/domain/entities/*"],
+      "@services/*": ["src/app/domain/services/*"],
+      "@repositories/*": ["src/app/domain/repositories/*"],
+      "@exceptions/*": ["src/app/domain/exceptions/*"],
+      "@infrastructure/*": ["src/app/infrastructure/*"],
+      "@adapters/*": ["src/app/infrastructure/adapters/*"],
+      "@persistence/*": ["src/app/infrastructure/adapters/persistence/*"],
+      "@mongodb/*": ["src/app/infrastructure/adapters/persistence/mongodb/*"],
+      "@web/*": ["src/app/infrastructure/adapters/web/*"],
+      "@controllers/*": ["src/app/infrastructure/adapters/web/controllers/*"],
+      "@dto/*": ["src/app/infrastructure/adapters/web/dto/*"],
+      "@shared/*": ["src/shared/*"],
+      "@gym/*": ["src/gym/*"],
+      "@config/*": ["src/config/*"]
+    }
+  }
+}

@@ -18,9 +18,15 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["src/*"],
-      "@shared/*": ["src/shared/*"],
-      "@app/*": ["src/app/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
+      ]
     }
   }
 }
