@@ -33,6 +33,11 @@ module.exports = {
     '^@config/(.*)$': '<rootDir>/src/config/$1',
   },
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    ...createGlobPatternsForDependencies(__dirname),
+  ],
   collectCoverageFrom: [
     'src/**/*.(t|j)s',
     '!src/**/*.spec.ts',

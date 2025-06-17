@@ -20,6 +20,7 @@ gym-app/
 ## 🚀 Comandos de Desarrollo
 
 ### Desarrollo conjunto (recomendado)
+
 ```bash
 # Ejecutar tanto el API como el frontend en paralelo
 npm run dev
@@ -30,6 +31,7 @@ npm run serve:web    # Solo el frontend (puerto 3000)
 ```
 
 ### Build
+
 ```bash
 # Build de todos los proyectos
 npm run build
@@ -40,6 +42,7 @@ npm run build:web
 ```
 
 ### Testing
+
 ```bash
 # Ejecutar tests en todos los proyectos
 npm run test
@@ -52,6 +55,7 @@ npm run test:coverage
 ```
 
 ### Linting y Formatting
+
 ```bash
 # Lint todos los proyectos
 npm run lint
@@ -64,6 +68,7 @@ npm run format
 ```
 
 ### Comandos Nx Avanzados
+
 ```bash
 # Ver el grafo de dependencias
 npm run dep-graph
@@ -80,6 +85,7 @@ npm run clean
 ## 📱 Aplicaciones
 
 ### 🔧 API (Backend)
+
 - **Ubicación**: `apps/api/`
 - **Tecnología**: NestJS + TypeScript
 - **Arquitectura**: Hexagonal (Ports & Adapters)
@@ -87,7 +93,8 @@ npm run clean
 - **Puerto**: 5000
 - **Documentación**: Swagger en `/api/docs`
 
-### 🌐 Web (Frontend)  
+### 🌐 Web (Frontend)
+
 - **Ubicación**: `apps/web/`
 - **Tecnología**: React + TypeScript + Vite
 - **Estilo**: Bootstrap
@@ -97,11 +104,13 @@ npm run clean
 ## 📚 Librerías Compartidas
 
 ### 🏷️ shared-types
+
 - **Ubicación**: `libs/shared-types/`
 - **Propósito**: Tipos TypeScript compartidos entre frontend y backend
 - **Incluye**: Interfaces de User, Gym, Exercise, WorkoutPlan, etc.
 
 ### 🛠️ shared-utils
+
 - **Ubicación**: `libs/shared-utils/`
 - **Propósito**: Utilidades y funciones comunes
 - **Incluye**: Validaciones, formateo de fechas, constantes, etc.
@@ -111,6 +120,7 @@ npm run clean
 ### Variables de Entorno
 
 **Backend (`apps/api/.env`)**:
+
 ```env
 MONGO_URI=mongodb://localhost:27017/gymdb
 RABBITMQ_URI=amqp://localhost:5672
@@ -119,6 +129,7 @@ NODE_ENV=development
 ```
 
 **Frontend (`apps/web/.env`)**:
+
 ```env
 VITE_API_URL=http://localhost:5000
 ```

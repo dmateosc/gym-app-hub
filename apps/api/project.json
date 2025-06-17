@@ -5,46 +5,28 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
+      "executor": "@nx/nest:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "target": "node",
-        "compiler": "tsc",
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"],
-        "isolatedConfig": true,
-        "webpackConfig": "apps/api/webpack.config.js"
+        "assets": ["apps/api/src/assets"]
       },
       "configurations": {
         "development": {
           "optimization": false,
-          "extractLicenses": false,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api/src/environments/environment.ts",
-              "with": "apps/api/src/environments/environment.development.ts"
-            }
-          ]
+          "extractLicenses": false
         },
         "production": {
           "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api/src/environments/environment.ts",
-              "with": "apps/api/src/environments/environment.production.ts"
-            }
-          ]
+          "extractLicenses": true
         }
       }
     },
     "serve": {
-      "executor": "@nx/js:node",
+      "executor": "@nx/nest:serve",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "api:build"
