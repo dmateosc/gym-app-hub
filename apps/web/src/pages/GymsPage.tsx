@@ -1,27 +1,16 @@
+import { Gym } from '@gym-app/shared-types';
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Modal, Form } from 'react-bootstrap';
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  Table,
+} from 'react-bootstrap';
 import { useGyms } from '../hooks/useGyms';
-
-interface Gym {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  phone: string;
-  email: string;
-  capacity: number;
-  operatingHours: {
-    monday: { open: string; close: string; };
-    tuesday: { open: string; close: string; };
-    wednesday: { open: string; close: string; };
-    thursday: { open: string; close: string; };
-    friday: { open: string; close: string; };
-    saturday: { open: string; close: string; };
-    sunday: { open: string; close: string; };
-  };
-  amenities: string[];
-  isActive: boolean;
-}
 
 const GymsPage: React.FC = () => {
   const { data: gyms, isLoading, error } = useGyms();
@@ -105,16 +94,16 @@ const GymsPage: React.FC = () => {
                         <td>
                           <strong>{gym.name}</strong>
                         </td>
-                        <td>{gym.city}</td>
-                        <td>{gym.address}</td>
+                        <td>{gym.address.city}</td>
+                        <td>{`${gym.address.street}, ${gym.address.city}, ${gym.address.state} ${gym.address.zipCode}`}</td>
                         <td>
                           <span className="badge bg-info">
-                            {gym.capacity} people
+                            {gym.maxCapacity} people
                           </span>
                         </td>
                         <td>{gym.phone}</td>
                         <td>
-                          <span 
+                          <span
                             className={`badge ${gym.isActive ? 'bg-success' : 'bg-danger'}`}
                           >
                             {gym.isActive ? 'Active' : 'Inactive'}
@@ -129,10 +118,7 @@ const GymsPage: React.FC = () => {
                           >
                             <i className="bi bi-pencil"></i>
                           </Button>
-                          <Button
-                            variant="outline-info"
-                            size="sm"
-                          >
+                          <Button variant="outline-info" size="sm">
                             <i className="bi bi-eye"></i>
                           </Button>
                         </td>
@@ -142,9 +128,14 @@ const GymsPage: React.FC = () => {
                 </Table>
               ) : (
                 <div className="text-center py-4">
-                  <i className="bi bi-building" style={{ fontSize: '3rem', color: '#ccc' }}></i>
+                  <i
+                    className="bi bi-building"
+                    style={{ fontSize: '3rem', color: '#ccc' }}
+                  ></i>
                   <h5 className="mt-3 text-muted">No gyms found</h5>
-                  <p className="text-muted">Add your first gym to get started</p>
+                  <p className="text-muted">
+                    Add your first gym to get started
+                  </p>
                   <Button variant="primary" onClick={() => handleShowModal()}>
                     Add New Gym
                   </Button>
@@ -158,9 +149,7 @@ const GymsPage: React.FC = () => {
       {/* Add/Edit Gym Modal */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedGym ? 'Edit Gym' : 'Add New Gym'}
-          </Modal.Title>
+          <Modal.Title>{selectedGym ? 'Edit Gym' : 'Add New Gym'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -233,7 +222,9 @@ const GymsPage: React.FC = () => {
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label>Status</Form.Label>
-                  <Form.Select defaultValue={selectedGym?.isActive ? 'true' : 'false'}>
+                  <Form.Select
+                    defaultValue={selectedGym?.isActive ? 'true' : 'false'}
+                  >
                     <option value="true">Active</option>
                     <option value="false">Inactive</option>
                   </Form.Select>

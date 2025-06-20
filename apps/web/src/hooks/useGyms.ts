@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { gymService, Gym, CreateGymRequest } from '../services/gymService';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { CreateGymRequest, gymService } from '../services/gymService';
 
 // Query keys
 export const gymKeys = {
@@ -61,8 +61,8 @@ export const useCreateGym = () => {
       queryClient.invalidateQueries({ queryKey: gymKeys.all });
       toast.success('Gym created successfully!');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create gym');
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to create gym');
     },
   });
 };
@@ -79,8 +79,8 @@ export const useUpdateGym = () => {
       queryClient.invalidateQueries({ queryKey: gymKeys.lists() });
       toast.success('Gym updated successfully!');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update gym');
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to update gym');
     },
   });
 };
@@ -95,8 +95,8 @@ export const useDeleteGym = () => {
       queryClient.invalidateQueries({ queryKey: gymKeys.all });
       toast.success('Gym deleted successfully!');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to delete gym');
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to delete gym');
     },
   });
 };
