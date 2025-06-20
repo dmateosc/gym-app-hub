@@ -26,6 +26,9 @@ export class AvailabilitySlotSchema {
 
   @Prop({ required: true })
   end: string;
+  startTime: string;
+  isAvailable: boolean;
+  endTime: string;
 }
 
 @Schema({ _id: false })
@@ -69,9 +72,17 @@ export class TrainerSchema extends Document {
   @Prop({ type: [CertificationSchema], default: [] })
   certifications: CertificationSchema[];
 
-  @Prop({ 
-    type: [String], 
-    enum: ['weight_training', 'cardio', 'nutrition', 'yoga', 'pilates', 'crossfit', 'boxing'],
+  @Prop({
+    type: [String],
+    enum: [
+      'weight_training',
+      'cardio',
+      'nutrition',
+      'yoga',
+      'pilates',
+      'crossfit',
+      'boxing',
+    ],
     default: [],
   })
   specialties: string[];
