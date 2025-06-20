@@ -1,25 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { WorkoutSessionRepositoryInterface } from '../../../../domain/repositories/workout-session.repository.interface';
 import { WorkoutSession } from '../../../../domain/entities/workout-session.entity';
 import { WorkoutSessionSchema } from './workout-session.schema';
 
 @Injectable()
-export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryInterface {
+export class MongoWorkoutSessionRepository {
   constructor(
     @InjectModel(WorkoutSessionSchema.name)
-    private readonly workoutSessionModel: Model<WorkoutSessionSchema>,
+    private readonly workoutSessionModel: Model<WorkoutSessionSchema>
   ) {}
 
   async save(workoutSession: WorkoutSession): Promise<WorkoutSession> {
     const sessionData = {
       workoutPlanId: new Types.ObjectId(workoutSession.workoutPlanId),
       userId: new Types.ObjectId(workoutSession.userId),
-      date: workoutSession.date,
       startTime: workoutSession.startTime,
       endTime: workoutSession.endTime,
-      duration: workoutSession.duration,
       exercises: workoutSession.exercises.map(exercise => ({
         exerciseId: new Types.ObjectId(exercise.exerciseId),
         setsCompleted: exercise.setsCompleted,
@@ -42,7 +39,7 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       const updated = await this.workoutSessionModel.findByIdAndUpdate(
         workoutSession.id,
         sessionData,
-        { new: true },
+        { new: true }
       );
       return this.toDomain(updated!);
     } else {
@@ -57,7 +54,7 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       .populate('workoutPlanId')
       .populate('userId')
       .populate('exercises.exerciseId');
-    
+
     return session ? this.toDomain(session) : null;
   }
 
@@ -68,7 +65,7 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       .populate('userId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
@@ -78,7 +75,7 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       .populate('workoutPlanId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
@@ -88,14 +85,14 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       .populate('userId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
   async findByUserIdAndDateRange(
     userId: string,
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): Promise<WorkoutSession[]> {
     const sessions = await this.workoutSessionModel
       .find({
@@ -105,33 +102,33 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       .populate('workoutPlanId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
   async findCompletedByUserId(userId: string): Promise<WorkoutSession[]> {
     const sessions = await this.workoutSessionModel
-      .find({ 
+      .find({
         userId: new Types.ObjectId(userId),
         status: 'completed',
       })
       .populate('workoutPlanId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
   async findInProgressByUserId(userId: string): Promise<WorkoutSession[]> {
     const sessions = await this.workoutSessionModel
-      .find({ 
+      .find({
         userId: new Types.ObjectId(userId),
         status: 'in_progress',
       })
       .populate('workoutPlanId')
       .populate('exercises.exerciseId')
       .sort({ date: -1, startTime: -1 });
-    
+
     return sessions.map(session => this.toDomain(session));
   }
 
@@ -163,7 +160,7 @@ export class MongoWorkoutSessionRepository implements WorkoutSessionRepositoryIn
       sessionDoc.maxHeartRate,
       sessionDoc.notes,
       sessionDoc.rating,
-      sessionDoc.status,
+      sessionDoc.status
     );
   }
 }

@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { WorkoutPlan } from '@entities/workout-plan.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import { WorkoutPlanRepository } from '@repositories/workout-plan.repository.interface';
-import { WorkoutPlan } from '@entities/workout-plan.entity';
+import { Model, Types } from 'mongoose';
 import { WorkoutPlanSchema } from './workout-plan.schema';
 
 @Injectable()
@@ -62,7 +65,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('trainerId')
       .populate('gymId')
       .populate('exercises.exerciseId');
-    
+
     return workoutPlan ? this.toDomain(workoutPlan) : null;
   }
 
@@ -74,7 +77,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ createdAt: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
@@ -85,7 +88,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ createdAt: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
@@ -96,7 +99,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ createdAt: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
@@ -107,14 +110,14 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('trainerId')
       .populate('exercises.exerciseId')
       .sort({ createdAt: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
   async findActiveByUserId(userId: string): Promise<WorkoutPlan[]> {
     const workoutPlans = await this.workoutPlanModel
-      .find({ 
-        userId: new Types.ObjectId(userId), 
+      .find({
+        userId: new Types.ObjectId(userId),
         isActive: true,
         startDate: { $lte: new Date() },
         endDate: { $gte: new Date() },
@@ -123,7 +126,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ startDate: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
@@ -135,13 +138,13 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ createdAt: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
   async findActivePlans(): Promise<WorkoutPlan[]> {
     const workoutPlans = await this.workoutPlanModel
-      .find({ 
+      .find({
         isActive: true,
         startDate: { $lte: new Date() },
         endDate: { $gte: new Date() },
@@ -151,13 +154,13 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ startDate: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
   async findExpiredPlans(): Promise<WorkoutPlan[]> {
     const workoutPlans = await this.workoutPlanModel
-      .find({ 
+      .find({
         endDate: { $lt: new Date() },
       })
       .populate('userId')
@@ -165,7 +168,7 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ endDate: -1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
@@ -173,30 +176,36 @@ export class MongoWorkoutPlanRepository implements WorkoutPlanRepository {
     return this.findActiveByUserId(userId);
   }
 
-  async update(id: string, workoutPlan: Partial<WorkoutPlan>): Promise<WorkoutPlan> {
+  async update(
+    id: string,
+    workoutPlan: Partial<WorkoutPlan>,
+  ): Promise<WorkoutPlan> {
     const updated = await this.workoutPlanModel.findByIdAndUpdate(
       id,
       workoutPlan,
-      { new: true }
+      { new: true },
     );
     return this.toDomain(updated!);
   }
 
-  async findByDateRange(startDate: Date, endDate: Date): Promise<WorkoutPlan[]> {
+  async findByDateRange(
+    startDate: Date,
+    endDate: Date,
+  ): Promise<WorkoutPlan[]> {
     const workoutPlans = await this.workoutPlanModel
       .find({
         $or: [
           { startDate: { $gte: startDate, $lte: endDate } },
           { endDate: { $gte: startDate, $lte: endDate } },
-          { startDate: { $lte: startDate }, endDate: { $gte: endDate } }
-        ]
+          { startDate: { $lte: startDate }, endDate: { $gte: endDate } },
+        ],
       })
       .populate('userId')
       .populate('trainerId')
       .populate('gymId')
       .populate('exercises.exerciseId')
       .sort({ startDate: 1 });
-    
+
     return workoutPlans.map(workoutPlan => this.toDomain(workoutPlan));
   }
 
