@@ -5,14 +5,16 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/nest:build",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/api",
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"]
+        "assets": ["apps/api/src/assets"],
+        "target": "node",
+        "compiler": "tsc"
       },
       "configurations": {
         "development": {

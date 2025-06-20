@@ -32,7 +32,6 @@ module.exports = {
     '^@gym/(.*)$': '<rootDir>/src/gym/$1',
     '^@config/(.*)$': '<rootDir>/src/config/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
   testPathIgnorePatterns: [
     '/node_modules/',
     '/dist/',
