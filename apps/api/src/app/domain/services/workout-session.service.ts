@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { WorkoutSessionRepositoryInterface } from '../repositories/workout-session.repository.interface';
-import { WorkoutSession } from '../entities/workout-session.entity';
 import { DomainException } from '../../../shared/domain/domain.exception';
+import { WorkoutSession } from '../entities/workout-session.entity';
+import { WorkoutSessionRepository } from '../repositories/workout-session.repository.interface';
 
 @Injectable()
 export class WorkoutSessionService {
   constructor(
-    private readonly workoutSessionRepository: WorkoutSessionRepositoryInterface,
+    private readonly workoutSessionRepository: WorkoutSessionRepository
   ) {}
 
   async startWorkoutSession(
     workoutPlanId: string,
     userId: string,
-    date: Date,
-    startTime: Date,
+    gymId: string,
+    sessionDate: Date,
+    startTime: Date
   ): Promise<WorkoutSession> {
     // Check if user already has an active session
-    const activeSessions = await this.workoutSessionRepository.findInProgressByUserId(userId);
+    const activeSessions =
+      await this.workoutSessionRepository.findInProgressByUserId(userId);
     if (activeSessions.length > 0) {
       throw new DomainException('User already has an active workout session');
     }
@@ -24,8 +26,9 @@ export class WorkoutSessionService {
     const workoutSession = WorkoutSession.start(
       workoutPlanId,
       userId,
-      date,
-      startTime,
+      gymId,
+      sessionDate,
+      startTime
     );
 
     return await this.workoutSessionRepository.save(workoutSession);
@@ -39,7 +42,7 @@ export class WorkoutSessionService {
     averageHeartRate?: number,
     maxHeartRate?: number,
     notes?: string,
-    rating?: number,
+    rating?: number
   ): Promise<WorkoutSession> {
     const session = await this.workoutSessionRepository.findById(id);
     if (!session) {
@@ -47,17 +50,17 @@ export class WorkoutSessionService {
     }
 
     if (session.status !== 'in_progress') {
-      throw new DomainException('Can only complete sessions that are in progress');
+      throw new DomainException(
+        'Can only complete sessions that are in progress'
+      );
     }
 
-    session.complete(
+    const updatedSession = session.complete(
       endTime,
       exercises,
-      totalCaloriesBurned,
-      averageHeartRate,
-      maxHeartRate,
-      notes,
       rating,
+      notes,
+      totalCaloriesBurned
     );
 
     return await this.workoutSessionRepository.save(session);
@@ -98,7 +101,9 @@ export class WorkoutSessionService {
     }
 
     if (session.status === 'completed' || session.status === 'cancelled') {
-      throw new DomainException('Cannot cancel a completed or already cancelled session');
+      throw new DomainException(
+        'Cannot cancel a completed or already cancelled session'
+      );
     }
 
     session.cancel();
@@ -114,7 +119,7 @@ export class WorkoutSessionService {
     durationCompleted?: number,
     restTimeTaken?: number,
     notes?: string,
-    completed?: boolean,
+    completed?: boolean
   ): Promise<WorkoutSession> {
     const session = await this.workoutSessionRepository.findById(sessionId);
     if (!session) {
@@ -122,21 +127,23 @@ export class WorkoutSessionService {
     }
 
     if (session.status !== 'in_progress') {
-      throw new DomainException('Can only update exercise progress for sessions in progress');
+      throw new DomainException(
+        'Can only update exercise progress for sessions in progress'
+      );
     }
 
-    session.updateExerciseProgress(
+    const updatedSession = session.updateExerciseProgress({
       exerciseId,
-      setsCompleted,
-      repsCompleted,
-      weightUsed,
-      durationCompleted,
-      restTimeTaken,
+      sets: setsCompleted,
+      reps: repsCompleted,
+      weight: weightUsed,
+      duration: durationCompleted,
+      restTime: restTimeTaken,
       notes,
       completed,
-    );
+    });
 
-    return await this.workoutSessionRepository.save(session);
+    return await this.workoutSessionRepository.save(updatedSession);
   }
 
   async getWorkoutSessionById(id: string): Promise<WorkoutSession> {
@@ -155,34 +162,44 @@ export class WorkoutSessionService {
     return await this.workoutSessionRepository.findByUserId(userId);
   }
 
-  async getWorkoutSessionsByWorkoutPlanId(workoutPlanId: string): Promise<WorkoutSession[]> {
-    return await this.workoutSessionRepository.findByWorkoutPlanId(workoutPlanId);
+  async getWorkoutSessionsByWorkoutPlanId(
+    workoutPlanId: string
+  ): Promise<WorkoutSession[]> {
+    return await this.workoutSessionRepository.findByWorkoutPlanId(
+      workoutPlanId
+    );
   }
 
   async getWorkoutSessionsByUserIdAndDateRange(
     userId: string,
     startDate: Date,
-    endDate: Date,
+    endDate: Date
   ): Promise<WorkoutSession[]> {
     return await this.workoutSessionRepository.findByUserIdAndDateRange(
       userId,
       startDate,
-      endDate,
+      endDate
     );
   }
 
-  async getCompletedWorkoutSessionsByUserId(userId: string): Promise<WorkoutSession[]> {
+  async getCompletedWorkoutSessionsByUserId(
+    userId: string
+  ): Promise<WorkoutSession[]> {
     return await this.workoutSessionRepository.findCompletedByUserId(userId);
   }
 
-  async getActiveWorkoutSessionByUserId(userId: string): Promise<WorkoutSession | null> {
-    const activeSessions = await this.workoutSessionRepository.findInProgressByUserId(userId);
+  async getActiveWorkoutSessionByUserId(
+    userId: string
+  ): Promise<WorkoutSession | null> {
+    const activeSessions =
+      await this.workoutSessionRepository.findInProgressByUserId(userId);
     return activeSessions.length > 0 ? activeSessions[0] : null;
   }
 
   async getWorkoutStatistics(userId: string): Promise<any> {
-    const sessions = await this.workoutSessionRepository.findCompletedByUserId(userId);
-    
+    const sessions =
+      await this.workoutSessionRepository.findCompletedByUserId(userId);
+
     if (sessions.length === 0) {
       return {
         totalSessions: 0,
@@ -194,16 +211,28 @@ export class WorkoutSessionService {
       };
     }
 
-    const totalDuration = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
-    const totalCalories = sessions.reduce((sum, session) => sum + (session.totalCaloriesBurned || 0), 0);
-    const totalRating = sessions.reduce((sum, session) => sum + (session.rating || 0), 0);
-    const sessionsWithRating = sessions.filter(session => session.rating).length;
+    const totalDuration = sessions.reduce(
+      (sum, session) => sum + (session.getDuration() || 0),
+      0
+    );
+    const totalCalories = sessions.reduce(
+      (sum, session) => sum + (session.caloriesBurned || 0),
+      0
+    );
+    const totalRating = sessions.reduce(
+      (sum, session) => sum + (session.overallRating || 0),
+      0
+    );
+    const sessionsWithRating = sessions.filter(
+      session => session.overallRating
+    ).length;
 
     return {
       totalSessions: sessions.length,
       totalDuration,
       totalCaloriesBurned: totalCalories,
-      averageRating: sessionsWithRating > 0 ? totalRating / sessionsWithRating : 0,
+      averageRating:
+        sessionsWithRating > 0 ? totalRating / sessionsWithRating : 0,
       averageDuration: totalDuration / sessions.length,
       averageCaloriesPerSession: totalCalories / sessions.length,
     };

@@ -1,13 +1,11 @@
+import { Trainer } from '@entities/trainer-simplified.entity';
 import { Injectable } from '@nestjs/common';
 import { TrainerRepository } from '@repositories/trainer.repository.interface';
-import { Trainer } from '@entities/trainer.entity';
 import { DomainException } from '@shared/domain/domain.exception';
 
 @Injectable()
 export class TrainerService {
-  constructor(
-    private readonly trainerRepository: TrainerRepository,
-  ) {}
+  constructor(private readonly trainerRepository: TrainerRepository) {}
 
   async createTrainer(
     firstName: string,
@@ -21,7 +19,7 @@ export class TrainerService {
     hourlyRate: number,
     availability: any,
     bio?: string,
-    profilePicture?: string,
+    profilePicture?: string
   ): Promise<Trainer> {
     // Check if email is already taken
     const existingTrainer = await this.trainerRepository.findByEmail(email);
@@ -44,19 +42,26 @@ export class TrainerService {
       throw new DomainException('At least one specialization is required');
     }
 
+    const name = `${firstName} ${lastName}`;
+    const formattedCertifications = certifications.map(cert => ({
+      name: cert.name,
+      institution: cert.institution || cert.issuer,
+      dateObtained: cert.dateObtained,
+      expirationDate: cert.expirationDate || cert.expiryDate,
+    }));
+
     const trainer = Trainer.create(
-      firstName,
-      lastName,
       email,
+      name,
       phone,
       gymId,
+      formattedCertifications,
       specializations,
-      certifications,
       experience,
-      hourlyRate,
-      availability,
-      bio,
+      bio || '',
       profilePicture,
+      hourlyRate,
+      availability
     );
 
     return await this.trainerRepository.save(trainer);
@@ -72,7 +77,7 @@ export class TrainerService {
     hourlyRate?: number,
     availability?: any,
     bio?: string,
-    profilePicture?: string,
+    profilePicture?: string
   ): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
@@ -97,7 +102,8 @@ export class TrainerService {
     }
     if (availability) trainer.updateAvailability(availability);
     if (bio !== undefined) trainer.updateBio(bio);
-    if (profilePicture !== undefined) trainer.updateProfilePicture(profilePicture);
+    if (profilePicture !== undefined)
+      trainer.updateProfilePicture(profilePicture);
 
     return await this.trainerRepository.save(trainer);
   }
@@ -107,7 +113,7 @@ export class TrainerService {
     name: string,
     issuer: string,
     dateObtained: Date,
-    expiryDate?: Date,
+    expiryDate?: Date
   ): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
@@ -116,17 +122,19 @@ export class TrainerService {
 
     const certification = {
       name,
-      issuer,
+      institution: issuer,
       dateObtained,
-      expiryDate,
-      isActive: true,
+      expirationDate: expiryDate,
     };
 
     trainer.addCertification(certification);
     return await this.trainerRepository.save(trainer);
   }
 
-  async removeCertification(id: string, certificationName: string): Promise<Trainer> {
+  async removeCertification(
+    id: string,
+    certificationName: string
+  ): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
       throw new DomainException('Trainer not found');
@@ -190,7 +198,9 @@ export class TrainerService {
     return await this.trainerRepository.findActiveByGymId(gymId);
   }
 
-  async getTrainersBySpecialization(specialization: string): Promise<Trainer[]> {
+  async getTrainersBySpecialization(
+    specialization: string
+  ): Promise<Trainer[]> {
     return await this.trainerRepository.findBySpecialization(specialization);
   }
 
@@ -198,12 +208,20 @@ export class TrainerService {
     gymId: string,
     day: string,
     startTime: string,
-    endTime: string,
+    endTime: string
   ): Promise<Trainer[]> {
-    return await this.trainerRepository.findAvailableTrainers(gymId, day, startTime, endTime);
+    return await this.trainerRepository.findAvailableTrainers(
+      gymId,
+      day,
+      startTime,
+      endTime
+    );
   }
 
-  async getTopRatedTrainersByGym(gymId: string, limit: number = 10): Promise<Trainer[]> {
+  async getTopRatedTrainersByGym(
+    gymId: string,
+    limit: number = 10
+  ): Promise<Trainer[]> {
     return await this.trainerRepository.findTopRatedByGymId(gymId, limit);
   }
 
@@ -232,14 +250,22 @@ export class TrainerService {
     day: string,
     isAvailable: boolean,
     startTime?: string,
-    endTime?: string,
+    endTime?: string
   ): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
       throw new DomainException('Trainer not found');
     }
 
-    const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const validDays = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
     if (!validDays.includes(day.toLowerCase())) {
       throw new DomainException('Invalid day of week');
     }
@@ -252,7 +278,7 @@ export class TrainerService {
     id: string,
     day: string,
     startTime: string,
-    endTime: string,
+    endTime: string
   ): Promise<boolean> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
