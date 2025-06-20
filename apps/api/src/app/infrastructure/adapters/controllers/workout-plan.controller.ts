@@ -1,9 +1,17 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WorkoutPlanService } from '../../../domain/services/workout-plan.service';
+import { AddExerciseToWorkoutPlanDto } from '../../dto/add-exercise-to-workout-plan.dto';
 import { CreateWorkoutPlanDto } from '../../dto/create-workout-plan.dto';
 import { UpdateWorkoutPlanDto } from '../../dto/update-workout-plan.dto';
-import { AddExerciseToWorkoutPlanDto } from '../../dto/add-exercise-to-workout-plan.dto';
 
 @ApiTags('workout-plans')
 @Controller('workout-plans')
@@ -20,7 +28,10 @@ export class WorkoutPlanController {
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get workout plans by user ID' })
   @ApiParam({ name: 'userId', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'List of workout plans for the user' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of workout plans for the user',
+  })
   async getWorkoutPlansByUserId(@Param('userId') userId: string) {
     return this.workoutPlanService.getWorkoutPlansByUserId(userId);
   }
@@ -28,7 +39,10 @@ export class WorkoutPlanController {
   @Get('trainer/:trainerId')
   @ApiOperation({ summary: 'Get workout plans by trainer ID' })
   @ApiParam({ name: 'trainerId', description: 'Trainer ID' })
-  @ApiResponse({ status: 200, description: 'List of workout plans for the trainer' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of workout plans for the trainer',
+  })
   async getWorkoutPlansByTrainerId(@Param('trainerId') trainerId: string) {
     return this.workoutPlanService.getWorkoutPlansByTrainerId(trainerId);
   }
@@ -36,7 +50,10 @@ export class WorkoutPlanController {
   @Get('gym/:gymId')
   @ApiOperation({ summary: 'Get workout plans by gym ID' })
   @ApiParam({ name: 'gymId', description: 'Gym ID' })
-  @ApiResponse({ status: 200, description: 'List of workout plans for the gym' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of workout plans for the gym',
+  })
   async getWorkoutPlansByGymId(@Param('gymId') gymId: string) {
     return this.workoutPlanService.getWorkoutPlansByGymId(gymId);
   }
@@ -44,7 +61,10 @@ export class WorkoutPlanController {
   @Get('user/:userId/active')
   @ApiOperation({ summary: 'Get active workout plans by user ID' })
   @ApiParam({ name: 'userId', description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'List of active workout plans for the user' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of active workout plans for the user',
+  })
   async getActiveWorkoutPlansByUserId(@Param('userId') userId: string) {
     return this.workoutPlanService.getActiveWorkoutPlansByUserId(userId);
   }
@@ -60,44 +80,48 @@ export class WorkoutPlanController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new workout plan' })
-  @ApiResponse({ status: 201, description: 'Workout plan created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Workout plan created successfully',
+  })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   async createWorkoutPlan(@Body() createWorkoutPlanDto: CreateWorkoutPlanDto) {
-    return this.workoutPlanService.createWorkoutPlan(
-      createWorkoutPlanDto.name,
-      createWorkoutPlanDto.description,
-      createWorkoutPlanDto.userId,
-      createWorkoutPlanDto.trainerId,
-      createWorkoutPlanDto.gymId,
-      createWorkoutPlanDto.goal,
-      createWorkoutPlanDto.duration,
-      createWorkoutPlanDto.difficulty,
-      createWorkoutPlanDto.exercises,
-      createWorkoutPlanDto.schedule,
-      createWorkoutPlanDto.startDate,
-      createWorkoutPlanDto.endDate,
-    );
+    return this.workoutPlanService.createWorkoutPlan({
+      name: createWorkoutPlanDto.name,
+      description: createWorkoutPlanDto.description,
+      userId: createWorkoutPlanDto.userId,
+      trainerId: createWorkoutPlanDto.trainerId,
+      gymId: createWorkoutPlanDto.gymId,
+      goal: createWorkoutPlanDto.goal,
+      duration: createWorkoutPlanDto.duration,
+      difficulty: createWorkoutPlanDto.difficulty,
+      exercises: createWorkoutPlanDto.exercises,
+      schedule: createWorkoutPlanDto.schedule,
+      startDate: createWorkoutPlanDto.startDate,
+    });
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update workout plan' })
   @ApiParam({ name: 'id', description: 'Workout plan ID' })
-  @ApiResponse({ status: 200, description: 'Workout plan updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Workout plan updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async updateWorkoutPlan(
     @Param('id') id: string,
-    @Body() updateWorkoutPlanDto: UpdateWorkoutPlanDto,
+    @Body() updateWorkoutPlanDto: UpdateWorkoutPlanDto
   ) {
-    return this.workoutPlanService.updateWorkoutPlan(
-      id,
-      updateWorkoutPlanDto.name,
-      updateWorkoutPlanDto.description,
-      updateWorkoutPlanDto.goal,
-      updateWorkoutPlanDto.difficulty,
-      updateWorkoutPlanDto.exercises,
-      updateWorkoutPlanDto.schedule,
-      updateWorkoutPlanDto.isActive,
-    );
+    return this.workoutPlanService.updateWorkoutPlan(id, {
+      name: updateWorkoutPlanDto.name,
+      description: updateWorkoutPlanDto.description,
+      goal: updateWorkoutPlanDto.goal,
+      difficulty: updateWorkoutPlanDto.difficulty,
+      exercises: updateWorkoutPlanDto.exercises,
+      schedule: updateWorkoutPlanDto.schedule,
+      isActive: updateWorkoutPlanDto.isActive,
+    });
   }
 
   @Post(':id/exercises')
@@ -107,18 +131,18 @@ export class WorkoutPlanController {
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async addExerciseToWorkoutPlan(
     @Param('id') id: string,
-    @Body() addExerciseDto: AddExerciseToWorkoutPlanDto,
+    @Body() addExerciseDto: AddExerciseToWorkoutPlanDto
   ) {
-    return this.workoutPlanService.addExerciseToWorkoutPlan(
+    return this.workoutPlanService.addExerciseToWorkoutPlan({
       id,
-      addExerciseDto.exerciseId,
-      addExerciseDto.sets,
-      addExerciseDto.reps,
-      addExerciseDto.weight,
-      addExerciseDto.duration,
-      addExerciseDto.restTime,
-      addExerciseDto.notes,
-    );
+      exerciseId: addExerciseDto.exerciseId,
+      sets: addExerciseDto.sets,
+      reps: addExerciseDto.reps,
+      weight: addExerciseDto.weight,
+      duration: addExerciseDto.duration,
+      restTime: addExerciseDto.restTime,
+      notes: addExerciseDto.notes,
+    });
   }
 
   @Delete(':id/exercises/:exerciseId')
@@ -126,18 +150,27 @@ export class WorkoutPlanController {
   @ApiParam({ name: 'id', description: 'Workout plan ID' })
   @ApiParam({ name: 'exerciseId', description: 'Exercise ID' })
   @ApiResponse({ status: 200, description: 'Exercise removed successfully' })
-  @ApiResponse({ status: 404, description: 'Workout plan or exercise not found' })
+  @ApiResponse({
+    status: 404,
+    description: 'Workout plan or exercise not found',
+  })
   async removeExerciseFromWorkoutPlan(
     @Param('id') id: string,
-    @Param('exerciseId') exerciseId: string,
+    @Param('exerciseId') exerciseId: string
   ) {
-    return this.workoutPlanService.removeExerciseFromWorkoutPlan(id, exerciseId);
+    return this.workoutPlanService.removeExerciseFromWorkoutPlan(
+      id,
+      exerciseId
+    );
   }
 
   @Put(':id/activate')
   @ApiOperation({ summary: 'Activate workout plan' })
   @ApiParam({ name: 'id', description: 'Workout plan ID' })
-  @ApiResponse({ status: 200, description: 'Workout plan activated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Workout plan activated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async activateWorkoutPlan(@Param('id') id: string) {
     return this.workoutPlanService.activateWorkoutPlan(id);
@@ -146,7 +179,10 @@ export class WorkoutPlanController {
   @Put(':id/deactivate')
   @ApiOperation({ summary: 'Deactivate workout plan' })
   @ApiParam({ name: 'id', description: 'Workout plan ID' })
-  @ApiResponse({ status: 200, description: 'Workout plan deactivated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Workout plan deactivated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async deactivateWorkoutPlan(@Param('id') id: string) {
     return this.workoutPlanService.deactivateWorkoutPlan(id);
@@ -155,7 +191,10 @@ export class WorkoutPlanController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete workout plan' })
   @ApiParam({ name: 'id', description: 'Workout plan ID' })
-  @ApiResponse({ status: 200, description: 'Workout plan deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Workout plan deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async deleteWorkoutPlan(@Param('id') id: string) {
     await this.workoutPlanService.deleteWorkoutPlan(id);
