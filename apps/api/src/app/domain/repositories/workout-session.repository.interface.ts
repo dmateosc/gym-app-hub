@@ -8,11 +8,25 @@ export interface WorkoutSessionRepository {
   findByGymId(gymId: string): Promise<WorkoutSession[]>;
   findByStatus(status: string): Promise<WorkoutSession[]>;
   findByDateRange(startDate: Date, endDate: Date): Promise<WorkoutSession[]>;
-  findByUserAndDateRange(userId: string, startDate: Date, endDate: Date): Promise<WorkoutSession[]>;
+  findByUserAndDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<WorkoutSession[]>;
   findCompletedSessions(userId: string): Promise<WorkoutSession[]>;
   findInProgressSessions(): Promise<WorkoutSession[]>;
+  findInProgressByUserId(userId: string): Promise<WorkoutSession[]>;
+  findCompletedByUserId(userId: string): Promise<WorkoutSession[]>;
+  findByUserIdAndDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<WorkoutSession[]>;
   save(workoutSession: WorkoutSession): Promise<WorkoutSession>;
-  update(id: string, workoutSession: Partial<WorkoutSession>): Promise<WorkoutSession>;
+  update(
+    id: string,
+    workoutSession: Partial<WorkoutSession>,
+  ): Promise<WorkoutSession>;
   delete(id: string): Promise<void>;
   getSessionStats(userId: string): Promise<{
     totalSessions: number;
