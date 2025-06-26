@@ -23,6 +23,40 @@ export interface Availability {
   sunday: AvailabilitySlot[];
 }
 
+// Parameter objects for clean code
+export interface CreateTrainerParams {
+  email: string;
+  name: string;
+  phone: string;
+  gymId: string;
+  certifications: Certification[];
+  specialties: string[];
+  experience: number;
+  bio: string;
+  profileImage?: string;
+  hourlyRate?: number;
+  availability?: Availability;
+}
+
+export interface RestoreTrainerParams extends CreateTrainerParams {
+  id: string;
+  isActive?: boolean;
+  rating?: number;
+  totalClients?: number;
+}
+
+export interface UpdateTrainerParams {
+  name?: string;
+  phone?: string;
+  specialties?: string[];
+  experience?: number;
+  hourlyRate?: number;
+  bio?: string;
+  profileImage?: string;
+  availability?: Availability;
+  isActive?: boolean;
+}
+
 export class Trainer extends BaseEntity {
   constructor(
     id: string,
@@ -44,69 +78,41 @@ export class Trainer extends BaseEntity {
     super(id);
   }
 
-  public static create(
-    email: string,
-    name: string,
-    phone: string,
-    gymId: string,
-    certifications: Certification[],
-    specialties: string[],
-    experience: number,
-    bio: string,
-    profileImage?: string,
-    hourlyRate?: number,
-    availability?: Availability,
-  ): Trainer {
+  public static create(params: CreateTrainerParams): Trainer {
     const id = this.generateId();
     return new Trainer(
       id,
-      email,
-      name,
-      phone,
-      gymId,
-      certifications,
-      specialties,
-      experience,
-      bio,
-      profileImage,
-      hourlyRate,
-      availability,
+      params.email,
+      params.name,
+      params.phone,
+      params.gymId,
+      params.certifications,
+      params.specialties,
+      params.experience,
+      params.bio,
+      params.profileImage,
+      params.hourlyRate,
+      params.availability,
     );
   }
 
-  public static restore(
-    id: string,
-    email: string,
-    name: string,
-    phone: string,
-    gymId: string,
-    certifications: Certification[],
-    specialties: string[],
-    experience: number,
-    bio: string,
-    profileImage?: string,
-    hourlyRate?: number,
-    availability?: Availability,
-    isActive?: boolean,
-    rating?: number,
-    totalClients?: number,
-  ): Trainer {
+  public static restore(params: RestoreTrainerParams): Trainer {
     return new Trainer(
-      id,
-      email,
-      name,
-      phone,
-      gymId,
-      certifications,
-      specialties,
-      experience,
-      bio,
-      profileImage,
-      hourlyRate,
-      availability,
-      isActive ?? true,
-      rating ?? 0,
-      totalClients ?? 0,
+      params.id,
+      params.email,
+      params.name,
+      params.phone,
+      params.gymId,
+      params.certifications,
+      params.specialties,
+      params.experience,
+      params.bio,
+      params.profileImage,
+      params.hourlyRate,
+      params.availability,
+      params.isActive ?? true,
+      params.rating ?? 0,
+      params.totalClients ?? 0,
     );
   }
 
@@ -169,7 +175,7 @@ export class Trainer extends BaseEntity {
   public getValidCertifications(): Certification[] {
     const now = new Date();
     return this.certifications.filter(
-      cert => !cert.expirationDate || cert.expirationDate > now,
+      cert => !cert.expirationDate || cert.expirationDate > now
     );
   }
 
@@ -180,19 +186,7 @@ export class Trainer extends BaseEntity {
   }
 
   // Simplified update methods - return new instances
-  public update(
-    updates: Partial<{
-      name: string;
-      phone: string;
-      specialties: string[];
-      experience: number;
-      hourlyRate: number;
-      bio: string;
-      profileImage: string;
-      availability: Availability;
-      isActive: boolean;
-    }>,
-  ): Trainer {
+  public update(updates: UpdateTrainerParams): Trainer {
     return new Trainer(
       this.id,
       this.email,
@@ -208,7 +202,7 @@ export class Trainer extends BaseEntity {
       updates.availability ?? this.availability,
       updates.isActive ?? this.isActive,
       this.rating,
-      this.totalClients,
+      this.totalClients
     );
   }
 
@@ -229,13 +223,13 @@ export class Trainer extends BaseEntity {
       this.availability,
       this.isActive,
       this.rating,
-      this.totalClients,
+      this.totalClients
     );
   }
 
   public removeCertification(certificationName: string): Trainer {
     const updatedCertifications = this.certifications.filter(
-      cert => cert.name !== certificationName,
+      cert => cert.name !== certificationName
     );
     return new Trainer(
       this.id,
@@ -252,7 +246,7 @@ export class Trainer extends BaseEntity {
       this.availability,
       this.isActive,
       this.rating,
-      this.totalClients,
+      this.totalClients
     );
   }
 
@@ -305,17 +299,17 @@ export class Trainer extends BaseEntity {
     return this.update({ isActive: false });
   }
 
-  public updateRating(newRating: number): Trainer {
+  public updateRating(): this {
     // For now, just return the same trainer - in a real implementation,
     // you'd calculate the new average rating
     return this;
   }
 
-  public incrementClientCount(): Trainer {
+  public incrementClientCount(): this {
     return this;
   }
 
-  public decrementClientCount(): Trainer {
+  public decrementClientCount(): this {
     return this;
   }
 
@@ -323,7 +317,7 @@ export class Trainer extends BaseEntity {
     day: string,
     isAvailable: boolean,
     startTime?: string,
-    endTime?: string,
+    endTime?: string
   ): Trainer {
     if (!this.availability) return this;
 
