@@ -1,111 +1,108 @@
-import { Trainer } from '@entities/trainer-simplified.entity';
+import {
+  Certification,
+  CreateTrainerParams,
+  Trainer,
+  UpdateTrainerParams,
+} from '@entities/trainer-simplified.entity';
 import { Injectable } from '@nestjs/common';
 import { TrainerRepository } from '@repositories/trainer.repository.interface';
 import { DomainException } from '@shared/domain/domain.exception';
+
+// Service DTOs for cleaner API
+export interface CreateTrainerRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gymId: string;
+  specializations: string[];
+  certifications: any[];
+  experience: number;
+  hourlyRate: number;
+  availability: any;
+  bio?: string;
+  profilePicture?: string;
+}
+
+export interface UpdateTrainerRequest {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  specializations?: string[];
+  experience?: number;
+  hourlyRate?: number;
+  availability?: any;
+  bio?: string;
+  profilePicture?: string;
+}
 
 @Injectable()
 export class TrainerService {
   constructor(private readonly trainerRepository: TrainerRepository) {}
 
-  async createTrainer(
-    firstName: string,
-    lastName: string,
-    email: string,
-    phone: string,
-    gymId: string,
-    specializations: string[],
-    certifications: any[],
-    experience: number,
-    hourlyRate: number,
-    availability: any,
-    bio?: string,
-    profilePicture?: string
-  ): Promise<Trainer> {
+  async createTrainer(request: CreateTrainerRequest): Promise<Trainer> {
     // Check if email is already taken
-    const existingTrainer = await this.trainerRepository.findByEmail(email);
+    const existingTrainer = await this.trainerRepository.findByEmail(
+      request.email
+    );
     if (existingTrainer) {
       throw new DomainException('Email is already in use');
     }
 
-    // Validate experience
-    if (experience < 0) {
-      throw new DomainException('Experience cannot be negative');
-    }
+    // Validate business rules
+    this.validateTrainerData(request);
 
-    // Validate hourly rate
-    if (hourlyRate <= 0) {
-      throw new DomainException('Hourly rate must be positive');
-    }
+    const params: CreateTrainerParams = {
+      email: request.email,
+      name: `${request.firstName} ${request.lastName}`,
+      phone: request.phone,
+      gymId: request.gymId,
+      certifications: this.formatCertifications(request.certifications),
+      specialties: request.specializations,
+      experience: request.experience,
+      bio: request.bio || '',
+      profileImage: request.profilePicture,
+      hourlyRate: request.hourlyRate,
+      availability: request.availability,
+    };
 
-    // Validate specializations
-    if (specializations.length === 0) {
-      throw new DomainException('At least one specialization is required');
-    }
-
-    const name = `${firstName} ${lastName}`;
-    const formattedCertifications = certifications.map(cert => ({
-      name: cert.name,
-      institution: cert.institution || cert.issuer,
-      dateObtained: cert.dateObtained,
-      expirationDate: cert.expirationDate || cert.expiryDate,
-    }));
-
-    const trainer = Trainer.create(
-      email,
-      name,
-      phone,
-      gymId,
-      formattedCertifications,
-      specializations,
-      experience,
-      bio || '',
-      profilePicture,
-      hourlyRate,
-      availability
-    );
-
+    const trainer = Trainer.create(params);
     return await this.trainerRepository.save(trainer);
   }
 
   async updateTrainer(
     id: string,
-    firstName?: string,
-    lastName?: string,
-    phone?: string,
-    specializations?: string[],
-    experience?: number,
-    hourlyRate?: number,
-    availability?: any,
-    bio?: string,
-    profilePicture?: string
+    request: UpdateTrainerRequest
   ): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
       throw new DomainException('Trainer not found');
     }
 
-    if (firstName) trainer.updateFirstName(firstName);
-    if (lastName) trainer.updateLastName(lastName);
-    if (phone) trainer.updatePhone(phone);
-    if (specializations) trainer.updateSpecializations(specializations);
-    if (experience !== undefined) {
-      if (experience < 0) {
-        throw new DomainException('Experience cannot be negative');
-      }
-      trainer.updateExperience(experience);
+    // Validate business rules if applicable
+    if (request.experience !== undefined && request.experience < 0) {
+      throw new DomainException('Experience cannot be negative');
     }
-    if (hourlyRate !== undefined) {
-      if (hourlyRate <= 0) {
-        throw new DomainException('Hourly rate must be positive');
-      }
-      trainer.updateHourlyRate(hourlyRate);
+    if (request.hourlyRate !== undefined && request.hourlyRate <= 0) {
+      throw new DomainException('Hourly rate must be positive');
     }
-    if (availability) trainer.updateAvailability(availability);
-    if (bio !== undefined) trainer.updateBio(bio);
-    if (profilePicture !== undefined)
-      trainer.updateProfilePicture(profilePicture);
 
-    return await this.trainerRepository.save(trainer);
+    const updateParams: UpdateTrainerParams = {
+      name:
+        request.firstName && request.lastName
+          ? `${request.firstName} ${request.lastName}`
+          : undefined,
+      phone: request.phone,
+      specialties: request.specializations,
+      experience: request.experience,
+      hourlyRate: request.hourlyRate,
+      availability: request.availability,
+      bio: request.bio,
+      profileImage: request.profilePicture,
+    };
+
+    const updatedTrainer = trainer.update(updateParams);
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async addCertification(
@@ -120,15 +117,15 @@ export class TrainerService {
       throw new DomainException('Trainer not found');
     }
 
-    const certification = {
+    const certification: Certification = {
       name,
       institution: issuer,
       dateObtained,
       expirationDate: expiryDate,
     };
 
-    trainer.addCertification(certification);
-    return await this.trainerRepository.save(trainer);
+    const updatedTrainer = trainer.addCertification(certification);
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async removeCertification(
@@ -140,42 +137,8 @@ export class TrainerService {
       throw new DomainException('Trainer not found');
     }
 
-    trainer.removeCertification(certificationName);
-    return await this.trainerRepository.save(trainer);
-  }
-
-  async updateRating(id: string, newRating: number): Promise<Trainer> {
-    const trainer = await this.trainerRepository.findById(id);
-    if (!trainer) {
-      throw new DomainException('Trainer not found');
-    }
-
-    if (newRating < 0 || newRating > 5) {
-      throw new DomainException('Rating must be between 0 and 5');
-    }
-
-    trainer.updateRating(newRating);
-    return await this.trainerRepository.save(trainer);
-  }
-
-  async incrementClientCount(id: string): Promise<Trainer> {
-    const trainer = await this.trainerRepository.findById(id);
-    if (!trainer) {
-      throw new DomainException('Trainer not found');
-    }
-
-    trainer.incrementClientCount();
-    return await this.trainerRepository.save(trainer);
-  }
-
-  async decrementClientCount(id: string): Promise<Trainer> {
-    const trainer = await this.trainerRepository.findById(id);
-    if (!trainer) {
-      throw new DomainException('Trainer not found');
-    }
-
-    trainer.decrementClientCount();
-    return await this.trainerRepository.save(trainer);
+    const updatedTrainer = trainer.removeCertification(certificationName);
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async getTrainerById(id: string): Promise<Trainer> {
@@ -218,21 +181,14 @@ export class TrainerService {
     );
   }
 
-  async getTopRatedTrainersByGym(
-    gymId: string,
-    limit: number = 10
-  ): Promise<Trainer[]> {
-    return await this.trainerRepository.findTopRatedByGymId(gymId, limit);
-  }
-
   async activateTrainer(id: string): Promise<Trainer> {
     const trainer = await this.trainerRepository.findById(id);
     if (!trainer) {
       throw new DomainException('Trainer not found');
     }
 
-    trainer.activate();
-    return await this.trainerRepository.save(trainer);
+    const updatedTrainer = trainer.activate();
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async deactivateTrainer(id: string): Promise<Trainer> {
@@ -241,8 +197,8 @@ export class TrainerService {
       throw new DomainException('Trainer not found');
     }
 
-    trainer.deactivate();
-    return await this.trainerRepository.save(trainer);
+    const updatedTrainer = trainer.deactivate();
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async updateAvailability(
@@ -270,8 +226,13 @@ export class TrainerService {
       throw new DomainException('Invalid day of week');
     }
 
-    trainer.updateDayAvailability(day, isAvailable, startTime, endTime);
-    return await this.trainerRepository.save(trainer);
+    const updatedTrainer = trainer.updateDayAvailability(
+      day,
+      isAvailable,
+      startTime,
+      endTime
+    );
+    return await this.trainerRepository.save(updatedTrainer);
   }
 
   async checkAvailability(
@@ -295,5 +256,27 @@ export class TrainerService {
     }
 
     await this.trainerRepository.delete(id);
+  }
+
+  // Helper methods for validation and formatting
+  private validateTrainerData(request: CreateTrainerRequest): void {
+    if (request.experience < 0) {
+      throw new DomainException('Experience cannot be negative');
+    }
+    if (request.hourlyRate <= 0) {
+      throw new DomainException('Hourly rate must be positive');
+    }
+    if (request.specializations.length === 0) {
+      throw new DomainException('At least one specialization is required');
+    }
+  }
+
+  private formatCertifications(certifications: any[]): Certification[] {
+    return certifications.map(cert => ({
+      name: cert.name,
+      institution: cert.institution || cert.issuer,
+      dateObtained: cert.dateObtained,
+      expirationDate: cert.expirationDate || cert.expiryDate,
+    }));
   }
 }
