@@ -32,6 +32,21 @@ export interface CreateWorkoutPlanParams {
   endDate?: Date;
 }
 
+export interface RestoreWorkoutPlanParams extends CreateWorkoutPlanParams {
+  id: string;
+  isActive?: boolean;
+}
+
+export interface UpdateWorkoutPlanParams {
+  name?: string;
+  description?: string;
+  goal?: string;
+  difficulty?: string;
+  exercises?: WorkoutExercise[];
+  schedule?: WorkoutSchedule;
+  isActive?: boolean;
+}
+
 export class WorkoutPlan extends BaseEntity {
   constructor(
     id: string,
@@ -52,117 +67,58 @@ export class WorkoutPlan extends BaseEntity {
     super(id);
   }
 
-  // Simplified factory method that can handle both parameter styles
-  public static create(
-    nameOrParams: string | CreateWorkoutPlanParams,
-    description?: string,
-    userId?: string,
-    trainerId?: string,
-    gymId?: string,
-    goal?: string,
-    duration?: number,
-    difficulty?: string,
-    exercises?: WorkoutExercise[],
-    schedule?: WorkoutSchedule,
-    startDate?: Date,
-    endDate?: Date
-  ): WorkoutPlan {
+  public static create(params: CreateWorkoutPlanParams): WorkoutPlan {
     const id = this.generateId();
-
-    if (typeof nameOrParams === 'object') {
-      // Object parameter style
-      const params = nameOrParams;
-      const calculatedEndDate =
-        params.endDate ||
-        new Date(
-          params.startDate.getTime() + params.duration * 7 * 24 * 60 * 60 * 1000
-        );
-
-      return new WorkoutPlan(
-        id,
-        params.name,
-        params.description,
-        params.userId,
-        params.trainerId,
-        params.gymId,
-        params.goal,
-        params.duration,
-        params.difficulty,
-        params.exercises,
-        params.schedule,
-        params.startDate,
-        calculatedEndDate
+    const calculatedEndDate =
+      params.endDate ||
+      new Date(
+        params.startDate.getTime() + params.duration * 7 * 24 * 60 * 60 * 1000,
       );
-    } else {
-      // Individual parameter style
-      const calculatedEndDate =
-        endDate ||
-        new Date(startDate!.getTime() + duration! * 7 * 24 * 60 * 60 * 1000);
 
-      return new WorkoutPlan(
-        id,
-        nameOrParams,
-        description!,
-        userId!,
-        trainerId!,
-        gymId!,
-        goal!,
-        duration!,
-        difficulty!,
-        exercises!,
-        schedule!,
-        startDate!,
-        calculatedEndDate
-      );
-    }
-  }
-
-  public static restore(
-    id: string,
-    name: string,
-    description: string,
-    userId: string,
-    trainerId: string,
-    gymId: string,
-    goal: string,
-    duration: number,
-    difficulty: string,
-    exercises: WorkoutExercise[],
-    schedule: WorkoutSchedule,
-    startDate: Date,
-    endDate: Date,
-    isActive: boolean = true
-  ): WorkoutPlan {
     return new WorkoutPlan(
       id,
-      name,
-      description,
-      userId,
-      trainerId,
-      gymId,
-      goal,
-      duration,
-      difficulty,
-      exercises,
-      schedule,
-      startDate,
-      endDate,
-      isActive
+      params.name,
+      params.description,
+      params.userId,
+      params.trainerId,
+      params.gymId,
+      params.goal,
+      params.duration,
+      params.difficulty,
+      params.exercises,
+      params.schedule,
+      params.startDate,
+      calculatedEndDate,
+    );
+  }
+
+  public static restore(params: RestoreWorkoutPlanParams): WorkoutPlan {
+    const calculatedEndDate =
+      params.endDate ||
+      new Date(
+        params.startDate.getTime() + params.duration * 7 * 24 * 60 * 60 * 1000,
+      );
+
+    return new WorkoutPlan(
+      params.id,
+      params.name,
+      params.description,
+      params.userId,
+      params.trainerId,
+      params.gymId,
+      params.goal,
+      params.duration,
+      params.difficulty,
+      params.exercises,
+      params.schedule,
+      params.startDate,
+      calculatedEndDate,
+      params.isActive ?? true,
     );
   }
 
   // Simplified update methods
-  public update(
-    updates: Partial<{
-      name: string;
-      description: string;
-      goal: string;
-      difficulty: string;
-      exercises: WorkoutExercise[];
-      schedule: WorkoutSchedule;
-      isActive: boolean;
-    }>
-  ): WorkoutPlan {
+  public update(updates: UpdateWorkoutPlanParams): WorkoutPlan {
     return new WorkoutPlan(
       this.id,
       updates.name ?? this.name,
@@ -177,7 +133,7 @@ export class WorkoutPlan extends BaseEntity {
       updates.schedule ?? this.schedule,
       this.startDate,
       this.endDate,
-      updates.isActive ?? this.isActive
+      updates.isActive ?? this.isActive,
     );
   }
 

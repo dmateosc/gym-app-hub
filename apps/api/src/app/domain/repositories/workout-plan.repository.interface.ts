@@ -1,4 +1,4 @@
-import { WorkoutPlan } from '@entities/workout-plan.entity';
+import { WorkoutPlan } from '@entities/workout-plan-simplified.entity';
 
 export interface WorkoutPlanRepository {
   findAll(): Promise<WorkoutPlan[]>;
