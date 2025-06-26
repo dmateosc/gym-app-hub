@@ -1,6 +1,18 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Gym } from '@entities/gym.entity';
+import { Gym, CreateGymParams, Address, OperatingHours } from '@entities/gym.entity';
 import { GymRepository } from '@repositories/gym.repository.interface';
+import { DomainException } from '@shared/domain/domain.exception';
+
+// Service DTOs for cleaner API
+export interface CreateGymRequest {
+  name: string;
+  address: Address;
+  phone: string;
+  email: string;
+  operatingHours: OperatingHours;
+  facilities: string[];
+  maxCapacity: number;
+}
 
 @Injectable()
 export class GymService {
@@ -25,39 +37,21 @@ export class GymService {
     return this.gymRepository.findActiveGyms();
   }
 
-  async createGym(gymData: {
-    name: string;
-    address: {
-      street: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      country: string;
+  async createGym(request: CreateGymRequest): Promise<Gym> {
+    // Validate business rules
+    this.validateGymData(request);
+
+    const params: CreateGymParams = {
+      name: request.name,
+      address: request.address,
+      phone: request.phone,
+      email: request.email,
+      operatingHours: request.operatingHours,
+      facilities: request.facilities,
+      maxCapacity: request.maxCapacity,
     };
-    phone: string;
-    email: string;
-    operatingHours: {
-      monday: { open: string; close: string; isClosed: boolean };
-      tuesday: { open: string; close: string; isClosed: boolean };
-      wednesday: { open: string; close: string; isClosed: boolean };
-      thursday: { open: string; close: string; isClosed: boolean };
-      friday: { open: string; close: string; isClosed: boolean };
-      saturday: { open: string; close: string; isClosed: boolean };
-      sunday: { open: string; close: string; isClosed: boolean };
-    };
-    facilities: string[];
-    maxCapacity: number;
-  }): Promise<Gym> {
-    const gym = Gym.create(
-      gymData.name,
-      gymData.address,
-      gymData.phone,
-      gymData.email,
-      gymData.operatingHours,
-      gymData.facilities,
-      gymData.maxCapacity,
-    );
-    
+
+    const gym = Gym.create(params);
     return this.gymRepository.save(gym);
   }
 
@@ -75,6 +69,29 @@ export class GymService {
   }
 
   async isGymOpen(gymId: string, day: string, time: string): Promise<boolean> {
+    const gym = await this.gymRepository.findById(gymId);
+    return gym ? gym.isOpenAt(day, time) : false;
+  }
+
+  // Private validation helper methods
+  private validateGymData(request: CreateGymRequest): void {
+    if (!request.name.trim()) {
+      throw new DomainException('Gym name cannot be empty');
+    }
+    if (!request.email.trim()) {
+      throw new DomainException('Gym email cannot be empty');
+    }
+    if (!request.phone.trim()) {
+      throw new DomainException('Gym phone cannot be empty');
+    }
+    if (request.maxCapacity <= 0) {
+      throw new DomainException('Gym capacity must be positive');
+    }
+    if (!request.facilities || request.facilities.length === 0) {
+      throw new DomainException('Gym must have at least one facility');
+    }
+  }
+}
     return this.gymRepository.isWithinOperatingHours(gymId, day, time);
   }
 }
