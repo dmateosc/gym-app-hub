@@ -1,6 +1,24 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Exercise } from '@entities/exercise.entity';
+import { Exercise, CreateExerciseParams } from '@entities/exercise.entity';
 import { ExerciseRepository } from '@repositories/exercise.repository.interface';
+import { DomainException } from '@shared/domain/domain.exception';
+
+// Service DTOs for cleaner API
+export interface CreateExerciseRequest {
+  name: string;
+  description: string;
+  category: string;
+  muscleGroups: string[];
+  equipment: string[];
+  difficulty: string;
+  instructions: string[];
+  tips?: string[];
+  warnings?: string[];
+  imageUrl?: string;
+  videoUrl?: string;
+  estimatedCaloriesPerMinute?: number;
+  createdBy?: string;
+}
 
 @Injectable()
 export class ExerciseService {
@@ -41,41 +59,34 @@ export class ExerciseService {
     return this.exerciseRepository.searchByName(name);
   }
 
-  async createExercise(exerciseData: {
-    name: string;
-    description: string;
-    category: string;
-    muscleGroups: string[];
-    equipment: string[];
-    difficulty: string;
-    instructions: string[];
-    tips?: string[];
-    warnings?: string[];
-    imageUrl?: string;
-    videoUrl?: string;
-    estimatedCaloriesPerMinute?: number;
-    createdBy?: string;
-  }): Promise<Exercise> {
-    const exercise = Exercise.create(
-      exerciseData.name,
-      exerciseData.description,
-      exerciseData.category,
-      exerciseData.muscleGroups,
-      exerciseData.equipment,
-      exerciseData.difficulty,
-      exerciseData.instructions,
-      exerciseData.tips || [],
-      exerciseData.warnings || [],
-      exerciseData.imageUrl,
-      exerciseData.videoUrl,
-      exerciseData.estimatedCaloriesPerMinute,
-      exerciseData.createdBy,
-    );
-    
+  async createExercise(request: CreateExerciseRequest): Promise<Exercise> {
+    // Validate business rules
+    this.validateExerciseData(request);
+
+    const params: CreateExerciseParams = {
+      name: request.name,
+      description: request.description,
+      category: request.category,
+      muscleGroups: request.muscleGroups,
+      equipment: request.equipment,
+      difficulty: request.difficulty,
+      instructions: request.instructions,
+      tips: request.tips,
+      warnings: request.warnings,
+      imageUrl: request.imageUrl,
+      videoUrl: request.videoUrl,
+      estimatedCaloriesPerMinute: request.estimatedCaloriesPerMinute,
+      createdBy: request.createdBy,
+    };
+
+    const exercise = Exercise.create(params);
     return this.exerciseRepository.save(exercise);
   }
 
-  async updateExercise(id: string, exerciseData: Partial<Exercise>): Promise<Exercise> {
+  async updateExercise(
+    id: string,
+    exerciseData: Partial<Exercise>,
+  ): Promise<Exercise> {
     return this.exerciseRepository.update(id, exerciseData);
   }
 
@@ -89,5 +100,39 @@ export class ExerciseService {
 
   async getExercisesByCreator(creatorId: string): Promise<Exercise[]> {
     return this.exerciseRepository.findByCreator(creatorId);
+  }
+
+  // Private validation helper methods
+  private validateExerciseData(request: CreateExerciseRequest): void {
+    if (!request.name.trim()) {
+      throw new DomainException('Exercise name cannot be empty');
+    }
+    if (!request.description.trim()) {
+      throw new DomainException('Exercise description cannot be empty');
+    }
+    if (!request.instructions || request.instructions.length === 0) {
+      throw new DomainException('Exercise must have at least one instruction');
+    }
+    if (!request.muscleGroups || request.muscleGroups.length === 0) {
+      throw new DomainException(
+        'Exercise must target at least one muscle group',
+      );
+    }
+
+    // Validate difficulty level
+    const validDifficulties = ['beginner', 'intermediate', 'advanced'];
+    if (!validDifficulties.includes(request.difficulty.toLowerCase())) {
+      throw new DomainException(
+        'Invalid difficulty level. Must be beginner, intermediate, or advanced',
+      );
+    }
+
+    // Validate category
+    const validCategories = ['cardio', 'strength', 'flexibility', 'sports'];
+    if (!validCategories.includes(request.category.toLowerCase())) {
+      throw new DomainException(
+        'Invalid category. Must be cardio, strength, flexibility, or sports',
+      );
+    }
   }
 }

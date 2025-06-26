@@ -1,5 +1,22 @@
 import { BaseEntity } from '@shared/domain/base.entity';
 
+// Parameter objects for clean code
+export interface CreateExerciseParams {
+  name: string;
+  description: string;
+  category: string;
+  muscleGroups: string[];
+  equipment: string[];
+  difficulty: string;
+  instructions: string[];
+  tips?: string[];
+  warnings?: string[];
+  imageUrl?: string;
+  videoUrl?: string;
+  estimatedCaloriesPerMinute?: number;
+  createdBy?: string;
+}
+
 export class Exercise extends BaseEntity {
   constructor(
     id: string,
@@ -21,37 +38,23 @@ export class Exercise extends BaseEntity {
     super(id);
   }
 
-  public static create(
-    name: string,
-    description: string,
-    category: string,
-    muscleGroups: string[],
-    equipment: string[],
-    difficulty: string,
-    instructions: string[],
-    tips: string[] = [],
-    warnings: string[] = [],
-    imageUrl?: string,
-    videoUrl?: string,
-    estimatedCaloriesPerMinute?: number,
-    createdBy?: string,
-  ): Exercise {
+  public static create(params: CreateExerciseParams): Exercise {
     const id = this.generateId();
     return new Exercise(
       id,
-      name,
-      description,
-      category,
-      muscleGroups,
-      equipment,
-      difficulty,
-      instructions,
-      tips,
-      warnings,
-      imageUrl,
-      videoUrl,
-      estimatedCaloriesPerMinute,
-      createdBy,
+      params.name,
+      params.description,
+      params.category,
+      params.muscleGroups,
+      params.equipment,
+      params.difficulty,
+      params.instructions,
+      params.tips || [],
+      params.warnings || [],
+      params.imageUrl,
+      params.videoUrl,
+      params.estimatedCaloriesPerMinute,
+      params.createdBy,
     );
   }
 
