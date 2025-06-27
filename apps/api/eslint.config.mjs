@@ -46,6 +46,31 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+      // Prettier integration rules
+      'prettier/prettier': [
+        'error',
+        {
+          semi: true,
+          trailingComma: 'all',
+          singleQuote: true,
+          printWidth: 80,
+          tabWidth: 2,
+          useTabs: false,
+          bracketSpacing: true,
+          arrowParens: 'avoid',
+        },
+      ],
+      // Additional formatting rules
+      'comma-dangle': [
+        'error',
+        {
+          arrays: 'always-multiline',
+          objects: 'always-multiline',
+          imports: 'always-multiline',
+          exports: 'always-multiline',
+          functions: 'always-multiline',
+        },
+      ],
     },
-  },
+  }
 );

@@ -1,5 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Gym, CreateGymParams, Address, OperatingHours } from '@entities/gym.entity';
+import {
+  Gym,
+  CreateGymParams,
+  Address,
+  OperatingHours,
+} from '@entities/gym.entity';
 import { GymRepository } from '@repositories/gym.repository.interface';
 import { DomainException } from '@shared/domain/domain.exception';
 
@@ -90,8 +95,5 @@ export class GymService {
     if (!request.facilities || request.facilities.length === 0) {
       throw new DomainException('Gym must have at least one facility');
     }
-  }
-}
-    return this.gymRepository.isWithinOperatingHours(gymId, day, time);
   }
 }
