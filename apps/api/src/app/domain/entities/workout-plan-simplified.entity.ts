@@ -62,7 +62,7 @@ export class WorkoutPlan extends BaseEntity {
     public readonly schedule: WorkoutSchedule,
     public readonly startDate: Date,
     public readonly endDate: Date,
-    public readonly isActive: boolean = true
+    public readonly isActive: boolean = true,
   ) {
     super(id);
   }
@@ -144,17 +144,17 @@ export class WorkoutPlan extends BaseEntity {
 
   public removeExercise(exerciseId: string): WorkoutPlan {
     const updatedExercises = this.exercises.filter(
-      ex => ex.exerciseId !== exerciseId
+      ex => ex.exerciseId !== exerciseId,
     );
     return this.update({ exercises: updatedExercises });
   }
 
   public updateExercise(
     exerciseId: string,
-    exerciseUpdates: Partial<WorkoutExercise>
+    exerciseUpdates: Partial<WorkoutExercise>,
   ): WorkoutPlan {
     const updatedExercises = this.exercises.map(ex =>
-      ex.exerciseId === exerciseId ? { ...ex, ...exerciseUpdates } : ex
+      ex.exerciseId === exerciseId ? { ...ex, ...exerciseUpdates } : ex,
     );
     return this.update({ exercises: updatedExercises });
   }

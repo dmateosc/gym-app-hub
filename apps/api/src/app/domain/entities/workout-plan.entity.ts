@@ -66,24 +66,24 @@ export class WorkoutPlan extends BaseEntity {
     return this._isActive;
   }
 
-  public static create(
-    createParams: {
-      name: string;
-      description: string;
-      userId: string;
-      trainerId: string;
-      gymId: string;
-      goal: string;
-      duration: number;
-      difficulty: string;
-      exercises: WorkoutExercise[];
-      schedule: WorkoutSchedule;
-      startDate: Date;
-    }
-  ): WorkoutPlan {
+  public static create(createParams: {
+    name: string;
+    description: string;
+    userId: string;
+    trainerId: string;
+    gymId: string;
+    goal: string;
+    duration: number;
+    difficulty: string;
+    exercises: WorkoutExercise[];
+    schedule: WorkoutSchedule;
+    startDate: Date;
+  }): WorkoutPlan {
     const id = crypto.randomUUID();
     const endDate = new Date(createParams.startDate);
-    endDate.setDate(createParams.startDate.getDate() + createParams.duration * 7);
+    endDate.setDate(
+      createParams.startDate.getDate() + createParams.duration * 7,
+    );
 
     return new WorkoutPlan(
       id,
@@ -190,7 +190,7 @@ export class WorkoutPlan extends BaseEntity {
 
   public removeExercise(exerciseId: string): void {
     this._exercises = this._exercises.filter(
-      (ex) => ex.exerciseId !== exerciseId,
+      ex => ex.exerciseId !== exerciseId,
     );
   }
 

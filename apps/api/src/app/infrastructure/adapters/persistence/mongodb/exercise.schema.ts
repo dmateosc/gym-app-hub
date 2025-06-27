@@ -9,28 +9,36 @@ export class ExerciseSchema extends Document {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ 
-    required: true, 
+  @Prop({
+    required: true,
     enum: ['cardio', 'strength', 'flexibility', 'sports'],
   })
   category: string;
 
-  @Prop({ 
-    type: [String], 
+  @Prop({
+    type: [String],
     enum: ['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'full_body'],
     default: [],
   })
   muscleGroups: string[];
 
-  @Prop({ 
-    type: [String], 
-    enum: ['barbell', 'dumbbell', 'machine', 'bodyweight', 'resistance_band', 'kettlebell', 'cable'],
+  @Prop({
+    type: [String],
+    enum: [
+      'barbell',
+      'dumbbell',
+      'machine',
+      'bodyweight',
+      'resistance_band',
+      'kettlebell',
+      'cable',
+    ],
     default: [],
   })
   equipment: string[];
 
-  @Prop({ 
-    required: true, 
+  @Prop({
+    required: true,
     enum: ['beginner', 'intermediate', 'advanced'],
   })
   difficulty: string;
@@ -71,8 +79,8 @@ ExerciseMongoSchema.index({ equipment: 1 });
 ExerciseMongoSchema.index({ isActive: 1 });
 
 // Índice de texto completo para búsquedas
-ExerciseMongoSchema.index({ 
-  name: 'text', 
-  description: 'text', 
-  instructions: 'text' 
+ExerciseMongoSchema.index({
+  name: 'text',
+  description: 'text',
+  instructions: 'text',
 });

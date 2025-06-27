@@ -1,4 +1,15 @@
-import { IsString, IsNotEmpty, IsEmail, IsMongoId, IsArray, IsNumber, IsObject, IsOptional, Min, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsMongoId,
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -47,17 +58,26 @@ class AvailabilityDto {
   @Type(() => DayAvailabilityDto)
   monday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Tuesday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Tuesday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   tuesday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Wednesday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Wednesday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   wednesday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Thursday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Thursday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   thursday: DayAvailabilityDto;
@@ -67,7 +87,10 @@ class AvailabilityDto {
   @Type(() => DayAvailabilityDto)
   friday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Saturday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Saturday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   saturday: DayAvailabilityDto;

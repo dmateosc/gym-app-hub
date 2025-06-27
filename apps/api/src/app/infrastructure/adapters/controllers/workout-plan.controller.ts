@@ -111,7 +111,7 @@ export class WorkoutPlanController {
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async updateWorkoutPlan(
     @Param('id') id: string,
-    @Body() updateWorkoutPlanDto: UpdateWorkoutPlanDto
+    @Body() updateWorkoutPlanDto: UpdateWorkoutPlanDto,
   ) {
     return this.workoutPlanService.updateWorkoutPlan(id, {
       name: updateWorkoutPlanDto.name,
@@ -131,7 +131,7 @@ export class WorkoutPlanController {
   @ApiResponse({ status: 404, description: 'Workout plan not found' })
   async addExerciseToWorkoutPlan(
     @Param('id') id: string,
-    @Body() addExerciseDto: AddExerciseToWorkoutPlanDto
+    @Body() addExerciseDto: AddExerciseToWorkoutPlanDto,
   ) {
     return this.workoutPlanService.addExerciseToWorkoutPlan({
       id,
@@ -156,11 +156,11 @@ export class WorkoutPlanController {
   })
   async removeExerciseFromWorkoutPlan(
     @Param('id') id: string,
-    @Param('exerciseId') exerciseId: string
+    @Param('exerciseId') exerciseId: string,
   ) {
     return this.workoutPlanService.removeExerciseFromWorkoutPlan(
       id,
-      exerciseId
+      exerciseId,
     );
   }
 

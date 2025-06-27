@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GymService } from '@services/gym.service';
 import { CreateGymDto } from '@infrastructure/dto/create-gym.dto';
@@ -73,7 +82,10 @@ export class GymController {
     @Param('id') id: string,
     @Query('currentUsers') currentUsers: number,
   ) {
-    const withinCapacity = await this.gymService.checkCapacity(id, currentUsers);
+    const withinCapacity = await this.gymService.checkCapacity(
+      id,
+      currentUsers,
+    );
     return { withinCapacity };
   }
 

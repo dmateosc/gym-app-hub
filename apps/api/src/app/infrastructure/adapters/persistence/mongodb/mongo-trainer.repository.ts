@@ -10,7 +10,7 @@ import { TrainerSchema } from './trainer.schema';
 export class MongoTrainerRepository implements TrainerRepository {
   constructor(
     @InjectModel(TrainerSchema.name)
-    private readonly trainerModel: Model<TrainerSchema>
+    private readonly trainerModel: Model<TrainerSchema>,
   ) {}
 
   async save(trainer: Trainer): Promise<Trainer> {
@@ -56,7 +56,7 @@ export class MongoTrainerRepository implements TrainerRepository {
       const updated = await this.trainerModel.findByIdAndUpdate(
         trainer.id,
         trainerData,
-        { new: true }
+        { new: true },
       );
       return this.toDomain(updated!);
     } else {
@@ -125,7 +125,7 @@ export class MongoTrainerRepository implements TrainerRepository {
     gymId: string,
     day: string,
     startTime: string,
-    endTime: string
+    endTime: string,
   ): Promise<Trainer[]> {
     const trainers = await this.trainerModel
       .find({
@@ -150,7 +150,7 @@ export class MongoTrainerRepository implements TrainerRepository {
           slot =>
             slot.isAvailable &&
             slot.startTime <= startTime &&
-            slot.endTime >= endTime
+            slot.endTime >= endTime,
         );
       })
       .map(trainer => this.toDomain(trainer))
@@ -159,7 +159,7 @@ export class MongoTrainerRepository implements TrainerRepository {
 
   async findTopRatedByGymId(
     gymId: string,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<Trainer[]> {
     const trainers = await this.trainerModel
       .find({
@@ -226,7 +226,7 @@ export class MongoTrainerRepository implements TrainerRepository {
 
         return dayAvailability.some(
           slot =>
-            slot.isAvailable && slot.startTime <= time && slot.endTime >= time
+            slot.isAvailable && slot.startTime <= time && slot.endTime >= time,
         );
       })
       .map(trainer => this.toDomain(trainer));
@@ -298,7 +298,7 @@ export class MongoTrainerRepository implements TrainerRepository {
       },
       trainerDoc.isActive,
       trainerDoc.rating,
-      trainerDoc.totalClients
+      trainerDoc.totalClients,
     );
   }
 }

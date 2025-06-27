@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsArray, IsOptional, IsNumber, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateExerciseDto {
@@ -17,19 +24,27 @@ export class CreateExerciseDto {
   @IsNotEmpty()
   category: string;
 
-  @ApiProperty({ 
-    type: [String], 
+  @ApiProperty({
+    type: [String],
     enum: ['chest', 'back', 'legs', 'shoulders', 'arms', 'core', 'full_body'],
-    example: ['chest', 'shoulders']
+    example: ['chest', 'shoulders'],
   })
   @IsArray()
   @IsString({ each: true })
   muscleGroups: string[];
 
-  @ApiProperty({ 
-    type: [String], 
-    enum: ['barbell', 'dumbbell', 'machine', 'bodyweight', 'resistance_band', 'kettlebell', 'cable'],
-    example: ['dumbbell']
+  @ApiProperty({
+    type: [String],
+    enum: [
+      'barbell',
+      'dumbbell',
+      'machine',
+      'bodyweight',
+      'resistance_band',
+      'kettlebell',
+      'cable',
+    ],
+    example: ['dumbbell'],
   })
   @IsArray()
   @IsString({ each: true })
@@ -40,18 +55,32 @@ export class CreateExerciseDto {
   @IsNotEmpty()
   difficulty: string;
 
-  @ApiProperty({ type: [String], example: ['Stand with feet shoulder-width apart', 'Lower down into squat position'] })
+  @ApiProperty({
+    type: [String],
+    example: [
+      'Stand with feet shoulder-width apart',
+      'Lower down into squat position',
+    ],
+  })
   @IsArray()
   @IsString({ each: true })
   instructions: string[];
 
-  @ApiProperty({ type: [String], required: false, example: ['Keep your back straight', 'Breathe consistently'] })
+  @ApiProperty({
+    type: [String],
+    required: false,
+    example: ['Keep your back straight', 'Breathe consistently'],
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   tips?: string[];
 
-  @ApiProperty({ type: [String], required: false, example: ['Avoid if you have knee problems'] })
+  @ApiProperty({
+    type: [String],
+    required: false,
+    example: ['Avoid if you have knee problems'],
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

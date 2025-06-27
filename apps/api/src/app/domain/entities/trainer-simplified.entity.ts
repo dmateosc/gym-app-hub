@@ -175,7 +175,7 @@ export class Trainer extends BaseEntity {
   public getValidCertifications(): Certification[] {
     const now = new Date();
     return this.certifications.filter(
-      cert => !cert.expirationDate || cert.expirationDate > now
+      cert => !cert.expirationDate || cert.expirationDate > now,
     );
   }
 
@@ -202,7 +202,7 @@ export class Trainer extends BaseEntity {
       updates.availability ?? this.availability,
       updates.isActive ?? this.isActive,
       this.rating,
-      this.totalClients
+      this.totalClients,
     );
   }
 
@@ -223,13 +223,13 @@ export class Trainer extends BaseEntity {
       this.availability,
       this.isActive,
       this.rating,
-      this.totalClients
+      this.totalClients,
     );
   }
 
   public removeCertification(certificationName: string): Trainer {
     const updatedCertifications = this.certifications.filter(
-      cert => cert.name !== certificationName
+      cert => cert.name !== certificationName,
     );
     return new Trainer(
       this.id,
@@ -246,7 +246,7 @@ export class Trainer extends BaseEntity {
       this.availability,
       this.isActive,
       this.rating,
-      this.totalClients
+      this.totalClients,
     );
   }
 
@@ -317,7 +317,7 @@ export class Trainer extends BaseEntity {
     day: string,
     isAvailable: boolean,
     startTime?: string,
-    endTime?: string
+    endTime?: string,
   ): Trainer {
     if (!this.availability) return this;
 

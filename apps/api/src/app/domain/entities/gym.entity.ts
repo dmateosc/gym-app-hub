@@ -85,11 +85,11 @@ export class Gym extends BaseEntity {
         day.toLowerCase() as keyof typeof this.operatingHours
       ];
     if (daySchedule?.isClosed) return false;
-    
+
     const currentTime = new Date(`1970-01-01T${time}`);
     const openTime = new Date(`1970-01-01T${daySchedule.open}`);
     const closeTime = new Date(`1970-01-01T${daySchedule.close}`);
-    
+
     return currentTime >= openTime && currentTime <= closeTime;
   }
 }

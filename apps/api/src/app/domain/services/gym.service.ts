@@ -1,10 +1,10 @@
-import { Injectable, Inject } from '@nestjs/common';
 import {
-  Gym,
-  CreateGymParams,
   Address,
+  CreateGymParams,
+  Gym,
   OperatingHours,
 } from '@entities/gym.entity';
+import { Inject, Injectable } from '@nestjs/common';
 import { GymRepository } from '@repositories/gym.repository.interface';
 import { DomainException } from '@shared/domain/domain.exception';
 

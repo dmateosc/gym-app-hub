@@ -48,11 +48,11 @@ export class MongoExerciseRepository implements ExerciseRepository {
 
   async findBodyweightExercises(): Promise<Exercise[]> {
     const exercises = await this.exerciseModel
-      .find({ 
+      .find({
         $or: [
           { equipment: { $in: ['bodyweight'] } },
-          { equipment: { $size: 0 } }
-        ]
+          { equipment: { $size: 0 } },
+        ],
       })
       .exec();
     return exercises.map(this.toDomain);
@@ -60,8 +60,8 @@ export class MongoExerciseRepository implements ExerciseRepository {
 
   async searchByName(name: string): Promise<Exercise[]> {
     const exercises = await this.exerciseModel
-      .find({ 
-        $text: { $search: name }
+      .find({
+        $text: { $search: name },
       })
       .exec();
     return exercises.map(this.toDomain);
@@ -85,7 +85,7 @@ export class MongoExerciseRepository implements ExerciseRepository {
       createdBy: exercise.createdBy,
       isActive: exercise.isActive,
     });
-    
+
     const savedExercise = await exerciseDoc.save();
     return this.toDomain(savedExercise);
   }
@@ -94,11 +94,11 @@ export class MongoExerciseRepository implements ExerciseRepository {
     const updatedExercise = await this.exerciseModel
       .findByIdAndUpdate(id, exerciseData, { new: true })
       .exec();
-    
+
     if (!updatedExercise) {
       throw new Error(`Exercise with id ${id} not found`);
     }
-    
+
     return this.toDomain(updatedExercise);
   }
 
@@ -107,7 +107,9 @@ export class MongoExerciseRepository implements ExerciseRepository {
   }
 
   async findByCreator(creatorId: string): Promise<Exercise[]> {
-    const exercises = await this.exerciseModel.find({ createdBy: creatorId }).exec();
+    const exercises = await this.exerciseModel
+      .find({ createdBy: creatorId })
+      .exec();
     return exercises.map(this.toDomain);
   }
 

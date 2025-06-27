@@ -69,17 +69,23 @@ export class WorkoutPlanSchema extends Document {
   @Prop({ type: Types.ObjectId, ref: 'GymSchema', required: true })
   gymId: Types.ObjectId;
 
-  @Prop({ 
-    required: true, 
-    enum: ['weight_loss', 'muscle_gain', 'endurance', 'strength', 'general_fitness'],
+  @Prop({
+    required: true,
+    enum: [
+      'weight_loss',
+      'muscle_gain',
+      'endurance',
+      'strength',
+      'general_fitness',
+    ],
   })
   goal: string;
 
   @Prop({ required: true, min: 1 })
   duration: number;
 
-  @Prop({ 
-    required: true, 
+  @Prop({
+    required: true,
     enum: ['beginner', 'intermediate', 'advanced'],
   })
   difficulty: string;
@@ -100,7 +106,8 @@ export class WorkoutPlanSchema extends Document {
   isActive: boolean;
 }
 
-export const WorkoutPlanMongoSchema = SchemaFactory.createForClass(WorkoutPlanSchema);
+export const WorkoutPlanMongoSchema =
+  SchemaFactory.createForClass(WorkoutPlanSchema);
 
 WorkoutPlanMongoSchema.index({ userId: 1 });
 WorkoutPlanMongoSchema.index({ trainerId: 1 });

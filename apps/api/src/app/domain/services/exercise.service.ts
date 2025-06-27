@@ -1,5 +1,5 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Exercise, CreateExerciseParams } from '@entities/exercise.entity';
+import { CreateExerciseParams, Exercise } from '@entities/exercise.entity';
+import { Inject, Injectable } from '@nestjs/common';
 import { ExerciseRepository } from '@repositories/exercise.repository.interface';
 import { DomainException } from '@shared/domain/domain.exception';
 

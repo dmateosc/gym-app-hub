@@ -377,7 +377,7 @@ export class Trainer extends BaseEntity {
     );
   }
 
-  public updateRating(newRating: number): Trainer {
+  public updateRating(_newRating: number): Trainer {
     // For now, just return the same trainer
     // In a real implementation, you'd calculate the new average rating
     return this;

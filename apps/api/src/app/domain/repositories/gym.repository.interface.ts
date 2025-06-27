@@ -10,5 +10,9 @@ export interface GymRepository {
   update(id: string, gym: Partial<Gym>): Promise<Gym>;
   delete(id: string): Promise<void>;
   findByCapacityRange(minCapacity: number, maxCapacity: number): Promise<Gym[]>;
-  isWithinOperatingHours(gymId: string, day: string, time: string): Promise<boolean>;
+  isWithinOperatingHours(
+    gymId: string,
+    day: string,
+    time: string,
+  ): Promise<boolean>;
 }

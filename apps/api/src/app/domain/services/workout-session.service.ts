@@ -1,69 +1,136 @@
 import { Injectable } from '@nestjs/common';
 import { DomainException } from '../../../shared/domain/domain.exception';
-import { WorkoutSession } from '../entities/workout-session.entity';
+import {
+  SessionExercise,
+  WorkoutSession,
+} from '../entities/workout-session.entity';
+import { WorkoutPlanRepository } from '../repositories/workout-plan.repository.interface';
 import { WorkoutSessionRepository } from '../repositories/workout-session.repository.interface';
+
+// Service DTOs for cleaner API
+export interface CompleteWorkoutSessionRequest {
+  id: string;
+  endTime: Date;
+  exercises: CompletedExerciseData[];
+  totalCaloriesBurned?: number;
+  averageHeartRate?: number;
+  maxHeartRate?: number;
+  notes?: string;
+  rating?: number;
+}
+
+export interface CompletedExerciseData {
+  exerciseId: string;
+  setsCompleted: number;
+  repsCompleted: number;
+  weightUsed?: number;
+  durationCompleted?: number;
+  restTimeTaken?: number;
+  notes?: string;
+  completed?: boolean;
+  rating?: number;
+}
+
+export interface UpdateExerciseProgressRequest {
+  sessionId: string;
+  exerciseId: string;
+  setsCompleted: number;
+  repsCompleted: number;
+  weightUsed?: number;
+  durationCompleted?: number;
+  restTimeTaken?: number;
+  notes?: string;
+  completed?: boolean;
+}
+
+// New DTO for start workout session
+export interface StartWorkoutSessionRequest {
+  workoutPlanId: string;
+  userId: string;
+  sessionDate: Date;
+  startTime: Date;
+}
 
 @Injectable()
 export class WorkoutSessionService {
   constructor(
-    private readonly workoutSessionRepository: WorkoutSessionRepository
+    private readonly workoutSessionRepository: WorkoutSessionRepository,
+    private readonly workoutPlanRepository: WorkoutPlanRepository,
   ) {}
 
   async startWorkoutSession(
-    workoutPlanId: string,
-    userId: string,
-    gymId: string,
-    sessionDate: Date,
-    startTime: Date
+    request: StartWorkoutSessionRequest,
   ): Promise<WorkoutSession> {
     // Check if user already has an active session
     const activeSessions =
-      await this.workoutSessionRepository.findInProgressByUserId(userId);
+      await this.workoutSessionRepository.findInProgressByUserId(
+        request.userId,
+      );
     if (activeSessions.length > 0) {
       throw new DomainException('User already has an active workout session');
     }
 
+    // Get workout plan to derive gymId
+    const workoutPlan = await this.workoutPlanRepository.findById(
+      request.workoutPlanId,
+    );
+    if (!workoutPlan) {
+      throw new DomainException('Workout plan not found');
+    }
+
     const workoutSession = WorkoutSession.start(
-      workoutPlanId,
-      userId,
-      gymId,
-      sessionDate,
-      startTime
+      request.workoutPlanId,
+      request.userId,
+      workoutPlan.gymId,
+      request.sessionDate,
+      request.startTime,
     );
 
     return await this.workoutSessionRepository.save(workoutSession);
   }
 
   async completeWorkoutSession(
-    id: string,
-    endTime: Date,
-    exercises: any[],
-    totalCaloriesBurned?: number,
-    averageHeartRate?: number,
-    maxHeartRate?: number,
-    notes?: string,
-    rating?: number
+    request: CompleteWorkoutSessionRequest,
   ): Promise<WorkoutSession> {
-    const session = await this.workoutSessionRepository.findById(id);
+    const session = await this.workoutSessionRepository.findById(request.id);
     if (!session) {
       throw new DomainException('Workout session not found');
     }
 
     if (session.status !== 'in_progress') {
       throw new DomainException(
-        'Can only complete sessions that are in progress'
+        'Can only complete sessions that are in progress',
       );
     }
 
-    const updatedSession = session.complete(
-      endTime,
-      exercises,
-      rating,
-      notes,
-      totalCaloriesBurned
+    // Convert DTO exercises to SessionExercise format
+    const sessionExercises: SessionExercise[] = request.exercises.map(
+      (exercise: CompletedExerciseData) => ({
+        exerciseId: exercise.exerciseId,
+        plannedSets: exercise.setsCompleted || 1,
+        completedSets: [
+          {
+            reps: exercise.repsCompleted || 0,
+            weight: exercise.weightUsed,
+            duration: exercise.durationCompleted,
+            restTime: exercise.restTimeTaken || 60,
+            completed: exercise.completed || true,
+          },
+        ],
+        notes: exercise.notes,
+        rating: exercise.rating,
+      }),
     );
 
-    return await this.workoutSessionRepository.save(session);
+    const updatedSession = session.complete(
+      request.endTime,
+      sessionExercises,
+      request.rating,
+      request.notes,
+      request.totalCaloriesBurned,
+    );
+
+    return await this.workoutSessionRepository.save(updatedSession);
   }
 
   async pauseWorkoutSession(id: string): Promise<WorkoutSession> {
@@ -102,7 +169,7 @@ export class WorkoutSessionService {
 
     if (session.status === 'completed' || session.status === 'cancelled') {
       throw new DomainException(
-        'Cannot cancel a completed or already cancelled session'
+        'Cannot cancel a completed or already cancelled session',
       );
     }
 
@@ -111,36 +178,30 @@ export class WorkoutSessionService {
   }
 
   async updateExerciseProgress(
-    sessionId: string,
-    exerciseId: string,
-    setsCompleted: number,
-    repsCompleted: number,
-    weightUsed?: number,
-    durationCompleted?: number,
-    restTimeTaken?: number,
-    notes?: string,
-    completed?: boolean
+    request: UpdateExerciseProgressRequest,
   ): Promise<WorkoutSession> {
-    const session = await this.workoutSessionRepository.findById(sessionId);
+    const session = await this.workoutSessionRepository.findById(
+      request.sessionId,
+    );
     if (!session) {
       throw new DomainException('Workout session not found');
     }
 
     if (session.status !== 'in_progress') {
       throw new DomainException(
-        'Can only update exercise progress for sessions in progress'
+        'Can only update exercise progress for sessions in progress',
       );
     }
 
     const updatedSession = session.updateExerciseProgress({
-      exerciseId,
-      sets: setsCompleted,
-      reps: repsCompleted,
-      weight: weightUsed,
-      duration: durationCompleted,
-      restTime: restTimeTaken,
-      notes,
-      completed,
+      exerciseId: request.exerciseId,
+      sets: request.setsCompleted,
+      reps: request.repsCompleted,
+      weight: request.weightUsed,
+      duration: request.durationCompleted,
+      restTime: request.restTimeTaken,
+      notes: request.notes,
+      completed: request.completed,
     });
 
     return await this.workoutSessionRepository.save(updatedSession);
@@ -163,33 +224,33 @@ export class WorkoutSessionService {
   }
 
   async getWorkoutSessionsByWorkoutPlanId(
-    workoutPlanId: string
+    workoutPlanId: string,
   ): Promise<WorkoutSession[]> {
     return await this.workoutSessionRepository.findByWorkoutPlanId(
-      workoutPlanId
+      workoutPlanId,
     );
   }
 
   async getWorkoutSessionsByUserIdAndDateRange(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<WorkoutSession[]> {
     return await this.workoutSessionRepository.findByUserIdAndDateRange(
       userId,
       startDate,
-      endDate
+      endDate,
     );
   }
 
   async getCompletedWorkoutSessionsByUserId(
-    userId: string
+    userId: string,
   ): Promise<WorkoutSession[]> {
     return await this.workoutSessionRepository.findCompletedByUserId(userId);
   }
 
   async getActiveWorkoutSessionByUserId(
-    userId: string
+    userId: string,
   ): Promise<WorkoutSession | null> {
     const activeSessions =
       await this.workoutSessionRepository.findInProgressByUserId(userId);
@@ -213,18 +274,18 @@ export class WorkoutSessionService {
 
     const totalDuration = sessions.reduce(
       (sum, session) => sum + (session.getDuration() || 0),
-      0
+      0,
     );
     const totalCalories = sessions.reduce(
       (sum, session) => sum + (session.caloriesBurned || 0),
-      0
+      0,
     );
     const totalRating = sessions.reduce(
       (sum, session) => sum + (session.overallRating || 0),
-      0
+      0,
     );
     const sessionsWithRating = sessions.filter(
-      session => session.overallRating
+      session => session.overallRating,
     ).length;
 
     return {

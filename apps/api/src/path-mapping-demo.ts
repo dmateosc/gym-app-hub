@@ -5,7 +5,7 @@ import { WorkoutPlanService } from '@services/workout-plan.service';
 import { WorkoutPlanNotFoundException } from '@exceptions/workout-plan-not-found.exception';
 
 // This file demonstrates that the @ path mappings are working correctly
-// If these imports resolve without "Cannot find module" errors, 
+// If these imports resolve without "Cannot find module" errors,
 // then the path mapping configuration is successful
 
 export class PathMappingDemo {

@@ -57,7 +57,7 @@ export class WorkoutSessionSchema extends Document {
   @Prop()
   endTime?: Date;
 
-  @Prop({ 
+  @Prop({
     default: 'planned',
     enum: ['planned', 'in_progress', 'completed', 'skipped'],
   })
@@ -76,7 +76,8 @@ export class WorkoutSessionSchema extends Document {
   caloriesBurned?: number;
 }
 
-export const WorkoutSessionMongoSchema = SchemaFactory.createForClass(WorkoutSessionSchema);
+export const WorkoutSessionMongoSchema =
+  SchemaFactory.createForClass(WorkoutSessionSchema);
 
 WorkoutSessionMongoSchema.index({ userId: 1, sessionDate: -1 });
 WorkoutSessionMongoSchema.index({ workoutPlanId: 1 });

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ExerciseService } from '@services/exercise.service';
 import { CreateExerciseDto } from '@infrastructure/dto/create-exercise.dto';
@@ -32,42 +41,60 @@ export class ExerciseController {
 
   @Get('category/:category')
   @ApiOperation({ summary: 'Get exercises by category' })
-  @ApiResponse({ status: 200, description: 'List of exercises in the specified category' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises in the specified category',
+  })
   async getExercisesByCategory(@Param('category') category: string) {
     return this.exerciseService.getExercisesByCategory(category);
   }
 
   @Get('muscle-group/:muscleGroup')
   @ApiOperation({ summary: 'Get exercises by muscle group' })
-  @ApiResponse({ status: 200, description: 'List of exercises for the specified muscle group' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises for the specified muscle group',
+  })
   async getExercisesByMuscleGroup(@Param('muscleGroup') muscleGroup: string) {
     return this.exerciseService.getExercisesByMuscleGroup(muscleGroup);
   }
 
   @Get('difficulty/:difficulty')
   @ApiOperation({ summary: 'Get exercises by difficulty' })
-  @ApiResponse({ status: 200, description: 'List of exercises for the specified difficulty' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises for the specified difficulty',
+  })
   async getExercisesByDifficulty(@Param('difficulty') difficulty: string) {
     return this.exerciseService.getExercisesByDifficulty(difficulty);
   }
 
   @Get('equipment/:equipment')
   @ApiOperation({ summary: 'Get exercises by equipment' })
-  @ApiResponse({ status: 200, description: 'List of exercises using the specified equipment' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises using the specified equipment',
+  })
   async getExercisesByEquipment(@Param('equipment') equipment: string) {
     return this.exerciseService.getExercisesByEquipment(equipment);
   }
 
   @Get('search')
   @ApiOperation({ summary: 'Search exercises by name' })
-  @ApiResponse({ status: 200, description: 'List of exercises matching the search term' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises matching the search term',
+  })
   async searchExercises(@Query('name') name: string) {
     return this.exerciseService.searchExercisesByName(name);
   }
 
   @Get('creator/:creatorId')
   @ApiOperation({ summary: 'Get exercises by creator' })
-  @ApiResponse({ status: 200, description: 'List of exercises created by the specified trainer' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of exercises created by the specified trainer',
+  })
   async getExercisesByCreator(@Param('creatorId') creatorId: string) {
     return this.exerciseService.getExercisesByCreator(creatorId);
   }
@@ -92,7 +119,10 @@ export class ExerciseController {
   @ApiOperation({ summary: 'Update exercise' })
   @ApiResponse({ status: 200, description: 'Exercise updated successfully' })
   @ApiResponse({ status: 404, description: 'Exercise not found' })
-  async updateExercise(@Param('id') id: string, @Body() updateExerciseDto: UpdateExerciseDto) {
+  async updateExercise(
+    @Param('id') id: string,
+    @Body() updateExerciseDto: UpdateExerciseDto,
+  ) {
     return this.exerciseService.updateExercise(id, updateExerciseDto);
   }
 

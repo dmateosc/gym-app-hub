@@ -1,4 +1,15 @@
-import { IsString, IsNotEmpty, IsMongoId, IsNumber, IsArray, IsObject, IsDateString, ValidateNested, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsMongoId,
+  IsNumber,
+  IsArray,
+  IsObject,
+  IsDateString,
+  ValidateNested,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -22,7 +33,11 @@ class WorkoutExerciseDto {
   @Min(0)
   weight?: number;
 
-  @ApiProperty({ description: 'Duration in minutes', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Duration in minutes',
+    minimum: 0,
+    required: false,
+  })
   @IsNumber()
   @Min(0)
   duration?: number;
@@ -49,10 +64,18 @@ class WorkoutScheduleDto {
   @Max(7)
   daysPerWeek: number;
 
-  @ApiProperty({ 
-    description: 'Preferred days', 
-    enum: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
-    isArray: true
+  @ApiProperty({
+    description: 'Preferred days',
+    enum: [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ],
+    isArray: true,
   })
   @IsArray()
   @IsString({ each: true })
@@ -87,9 +110,15 @@ export class CreateWorkoutPlanDto {
   @IsMongoId()
   gymId: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Workout goal',
-    enum: ['weight_loss', 'muscle_gain', 'endurance', 'strength', 'general_fitness']
+    enum: [
+      'weight_loss',
+      'muscle_gain',
+      'endurance',
+      'strength',
+      'general_fitness',
+    ],
   })
   @IsString()
   goal: string;
@@ -99,9 +128,9 @@ export class CreateWorkoutPlanDto {
   @Min(1)
   duration: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Difficulty level',
-    enum: ['beginner', 'intermediate', 'advanced']
+    enum: ['beginner', 'intermediate', 'advanced'],
   })
   @IsString()
   difficulty: string;

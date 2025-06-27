@@ -12,7 +12,7 @@ export interface TrainerRepository {
     gymId: string,
     day: string,
     startTime: string,
-    endTime: string
+    endTime: string,
   ): Promise<Trainer[]>;
   findByEmail(email: string): Promise<Trainer | null>;
   save(trainer: Trainer): Promise<Trainer>;

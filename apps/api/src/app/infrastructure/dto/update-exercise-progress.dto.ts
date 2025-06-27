@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsBoolean,
+  Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateExerciseProgressDto {
@@ -22,7 +28,11 @@ export class UpdateExerciseProgressDto {
   @Min(0)
   weightUsed?: number;
 
-  @ApiProperty({ description: 'Duration completed', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Duration completed',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)

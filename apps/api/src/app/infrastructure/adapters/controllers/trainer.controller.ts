@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { TrainerService } from '@services/trainer.service';
 import { CreateTrainerDto } from '@infrastructure/dto/create-trainer.dto';
 import { UpdateTrainerDto } from '@infrastructure/dto/update-trainer.dto';
@@ -29,7 +44,10 @@ export class TrainerController {
   @Get('gym/:gymId/active')
   @ApiOperation({ summary: 'Get active trainers by gym ID' })
   @ApiParam({ name: 'gymId', description: 'Gym ID' })
-  @ApiResponse({ status: 200, description: 'List of active trainers for the gym' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of active trainers for the gym',
+  })
   async getActiveTrainersByGymId(@Param('gymId') gymId: string) {
     return this.trainerService.getActiveTrainersByGymId(gymId);
   }
@@ -37,8 +55,15 @@ export class TrainerController {
   @Get('gym/:gymId/top-rated')
   @ApiOperation({ summary: 'Get top-rated trainers by gym ID' })
   @ApiParam({ name: 'gymId', description: 'Gym ID' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Number of trainers to return' })
-  @ApiResponse({ status: 200, description: 'List of top-rated trainers for the gym' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of trainers to return',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of top-rated trainers for the gym',
+  })
   async getTopRatedTrainersByGym(
     @Param('gymId') gymId: string,
     @Query('limit') limit?: string,
@@ -50,8 +75,13 @@ export class TrainerController {
   @Get('specialization/:specialization')
   @ApiOperation({ summary: 'Get trainers by specialization' })
   @ApiParam({ name: 'specialization', description: 'Trainer specialization' })
-  @ApiResponse({ status: 200, description: 'List of trainers with the specialization' })
-  async getTrainersBySpecialization(@Param('specialization') specialization: string) {
+  @ApiResponse({
+    status: 200,
+    description: 'List of trainers with the specialization',
+  })
+  async getTrainersBySpecialization(
+    @Param('specialization') specialization: string,
+  ) {
     return this.trainerService.getTrainersBySpecialization(specialization);
   }
 
@@ -68,7 +98,12 @@ export class TrainerController {
     @Query('startTime') startTime: string,
     @Query('endTime') endTime: string,
   ) {
-    return this.trainerService.getAvailableTrainers(gymId, day, startTime, endTime);
+    return this.trainerService.getAvailableTrainers(
+      gymId,
+      day,
+      startTime,
+      endTime,
+    );
   }
 
   @Get(':id')
@@ -93,7 +128,12 @@ export class TrainerController {
     @Query('startTime') startTime: string,
     @Query('endTime') endTime: string,
   ) {
-    const isAvailable = await this.trainerService.checkAvailability(id, day, startTime, endTime);
+    const isAvailable = await this.trainerService.checkAvailability(
+      id,
+      day,
+      startTime,
+      endTime,
+    );
     return { isAvailable };
   }
 
@@ -163,8 +203,14 @@ export class TrainerController {
   @ApiOperation({ summary: 'Remove certification from trainer' })
   @ApiParam({ name: 'id', description: 'Trainer ID' })
   @ApiParam({ name: 'certificationName', description: 'Certification name' })
-  @ApiResponse({ status: 200, description: 'Certification removed successfully' })
-  @ApiResponse({ status: 404, description: 'Trainer or certification not found' })
+  @ApiResponse({
+    status: 200,
+    description: 'Certification removed successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Trainer or certification not found',
+  })
   async removeCertification(
     @Param('id') id: string,
     @Param('certificationName') certificationName: string,
@@ -187,7 +233,10 @@ export class TrainerController {
   @Put(':id/availability')
   @ApiOperation({ summary: 'Update trainer availability for a specific day' })
   @ApiParam({ name: 'id', description: 'Trainer ID' })
-  @ApiResponse({ status: 200, description: 'Availability updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Availability updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Trainer not found' })
   async updateAvailability(
     @Param('id') id: string,
@@ -223,7 +272,10 @@ export class TrainerController {
   @Put(':id/client-count/increment')
   @ApiOperation({ summary: 'Increment trainer client count' })
   @ApiParam({ name: 'id', description: 'Trainer ID' })
-  @ApiResponse({ status: 200, description: 'Client count incremented successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Client count incremented successfully',
+  })
   @ApiResponse({ status: 404, description: 'Trainer not found' })
   async incrementClientCount(@Param('id') id: string) {
     return this.trainerService.incrementClientCount(id);
@@ -232,7 +284,10 @@ export class TrainerController {
   @Put(':id/client-count/decrement')
   @ApiOperation({ summary: 'Decrement trainer client count' })
   @ApiParam({ name: 'id', description: 'Trainer ID' })
-  @ApiResponse({ status: 200, description: 'Client count decremented successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Client count decremented successfully',
+  })
   @ApiResponse({ status: 404, description: 'Trainer not found' })
   async decrementClientCount(@Param('id') id: string) {
     return this.trainerService.decrementClientCount(id);

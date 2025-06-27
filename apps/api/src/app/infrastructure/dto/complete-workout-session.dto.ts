@@ -1,4 +1,13 @@
-import { IsDateString, IsArray, IsNumber, IsOptional, IsString, Min, Max, ValidateNested } from 'class-validator';
+import {
+  IsDateString,
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  Max,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -49,25 +58,40 @@ export class CompleteWorkoutSessionDto {
   @IsDateString()
   endTime: Date;
 
-  @ApiProperty({ description: 'Completed exercises', type: [CompletedExerciseDto] })
+  @ApiProperty({
+    description: 'Completed exercises',
+    type: [CompletedExerciseDto],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CompletedExerciseDto)
   exercises: CompletedExerciseDto[];
 
-  @ApiProperty({ description: 'Total calories burned', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Total calories burned',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
   totalCaloriesBurned?: number;
 
-  @ApiProperty({ description: 'Average heart rate', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Average heart rate',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
   averageHeartRate?: number;
 
-  @ApiProperty({ description: 'Maximum heart rate', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Maximum heart rate',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -78,7 +102,12 @@ export class CompleteWorkoutSessionDto {
   @IsString()
   notes?: string;
 
-  @ApiProperty({ description: 'Session rating', minimum: 1, maximum: 5, required: false })
+  @ApiProperty({
+    description: 'Session rating',
+    minimum: 1,
+    maximum: 5,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(1)

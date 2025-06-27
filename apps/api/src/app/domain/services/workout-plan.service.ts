@@ -1,14 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
 import {
-  WorkoutPlan,
-  WorkoutExercise,
-  WorkoutSchedule,
   CreateWorkoutPlanParams,
   UpdateWorkoutPlanParams,
+  WorkoutExercise,
+  WorkoutPlan,
+  WorkoutSchedule,
 } from '@entities/workout-plan-simplified.entity';
-import { WorkoutPlanRepository } from '@repositories/workout-plan.repository.interface';
-import { WorkoutPlanNotFoundException } from '@exceptions/workout-plan-not-found.exception';
 import { InvalidWorkoutPlanException } from '@exceptions/invalid-workout-plan.exception';
+import { WorkoutPlanNotFoundException } from '@exceptions/workout-plan-not-found.exception';
+import { Inject, Injectable } from '@nestjs/common';
+import { WorkoutPlanRepository } from '@repositories/workout-plan.repository.interface';
 
 // Service DTOs for cleaner API
 export interface CreateWorkoutPlanRequest {

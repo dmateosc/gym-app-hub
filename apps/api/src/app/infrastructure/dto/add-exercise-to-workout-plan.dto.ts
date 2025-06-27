@@ -1,4 +1,10 @@
-import { IsMongoId, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsMongoId,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AddExerciseToWorkoutPlanDto {
@@ -22,7 +28,11 @@ export class AddExerciseToWorkoutPlanDto {
   @Min(0)
   weight?: number;
 
-  @ApiProperty({ description: 'Duration in minutes', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Duration in minutes',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)

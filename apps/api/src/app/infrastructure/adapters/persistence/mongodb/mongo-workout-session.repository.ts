@@ -8,7 +8,7 @@ import { WorkoutSessionSchema } from './workout-session.schema';
 export class MongoWorkoutSessionRepository {
   constructor(
     @InjectModel(WorkoutSessionSchema.name)
-    private readonly workoutSessionModel: Model<WorkoutSessionSchema>
+    private readonly workoutSessionModel: Model<WorkoutSessionSchema>,
   ) {}
 
   async save(workoutSession: WorkoutSession): Promise<WorkoutSession> {
@@ -39,7 +39,7 @@ export class MongoWorkoutSessionRepository {
       const updated = await this.workoutSessionModel.findByIdAndUpdate(
         workoutSession.id,
         sessionData,
-        { new: true }
+        { new: true },
       );
       return this.toDomain(updated!);
     } else {
@@ -92,7 +92,7 @@ export class MongoWorkoutSessionRepository {
   async findByUserIdAndDateRange(
     userId: string,
     startDate: Date,
-    endDate: Date
+    endDate: Date,
   ): Promise<WorkoutSession[]> {
     const sessions = await this.workoutSessionModel
       .find({
@@ -160,7 +160,7 @@ export class MongoWorkoutSessionRepository {
       sessionDoc.maxHeartRate,
       sessionDoc.notes,
       sessionDoc.rating,
-      sessionDoc.status
+      sessionDoc.status,
     );
   }
 }

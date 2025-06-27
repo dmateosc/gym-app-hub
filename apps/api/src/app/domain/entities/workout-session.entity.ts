@@ -16,6 +16,36 @@ export interface SessionExercise {
   rating?: number;
 }
 
+// Parameter objects for clean code
+export interface CreateWorkoutSessionParams {
+  userId: string;
+  workoutPlanId: string;
+  gymId: string;
+  sessionDate: Date;
+  startTime?: Date;
+  endTime?: Date;
+  status?: string;
+  exercises?: SessionExercise[];
+  overallRating?: number;
+  notes?: string;
+  caloriesBurned?: number;
+}
+
+export interface RestoreWorkoutSessionParams
+  extends CreateWorkoutSessionParams {
+  id: string;
+}
+
+export interface UpdateWorkoutSessionParams {
+  startTime?: Date;
+  endTime?: Date;
+  status?: string;
+  exercises?: SessionExercise[];
+  overallRating?: number;
+  notes?: string;
+  caloriesBurned?: number;
+}
+
 export class WorkoutSession extends BaseEntity {
   constructor(
     id: string,
@@ -29,20 +59,28 @@ export class WorkoutSession extends BaseEntity {
     public readonly exercises: SessionExercise[] = [],
     public readonly overallRating?: number,
     public readonly notes?: string,
-    public readonly caloriesBurned?: number
+    public readonly caloriesBurned?: number,
   ) {
     super(id);
   }
 
   // Factory method for creating new session
-  public static create(
-    userId: string,
-    workoutPlanId: string,
-    gymId: string,
-    sessionDate: Date
-  ): WorkoutSession {
+  public static create(params: CreateWorkoutSessionParams): WorkoutSession {
     const id = this.generateId();
-    return new WorkoutSession(id, userId, workoutPlanId, gymId, sessionDate);
+    return new WorkoutSession(
+      id,
+      params.userId,
+      params.workoutPlanId,
+      params.gymId,
+      params.sessionDate,
+      params.startTime,
+      params.endTime,
+      params.status ?? 'planned',
+      params.exercises ?? [],
+      params.overallRating,
+      params.notes,
+      params.caloriesBurned,
+    );
   }
 
   // Factory method for starting session
@@ -51,7 +89,7 @@ export class WorkoutSession extends BaseEntity {
     userId: string,
     gymId: string,
     sessionDate: Date,
-    startTime: Date
+    startTime: Date,
   ): WorkoutSession {
     const id = this.generateId();
     return new WorkoutSession(
@@ -62,25 +100,12 @@ export class WorkoutSession extends BaseEntity {
       sessionDate,
       startTime,
       undefined,
-      'in_progress'
+      'in_progress',
     );
   }
 
   // Factory method for restoration from database
-  public static restore(data: {
-    id: string;
-    userId: string;
-    workoutPlanId: string;
-    gymId: string;
-    sessionDate: Date;
-    startTime?: Date;
-    endTime?: Date;
-    status?: string;
-    exercises?: SessionExercise[];
-    overallRating?: number;
-    notes?: string;
-    caloriesBurned?: number;
-  }): WorkoutSession {
+  public static restore(data: RestoreWorkoutSessionParams): WorkoutSession {
     return new WorkoutSession(
       data.id,
       data.userId,
@@ -93,22 +118,12 @@ export class WorkoutSession extends BaseEntity {
       data.exercises ?? [],
       data.overallRating,
       data.notes,
-      data.caloriesBurned
+      data.caloriesBurned,
     );
   }
 
   // Unified update method
-  public update(
-    updates: Partial<{
-      startTime: Date;
-      endTime: Date;
-      status: string;
-      exercises: SessionExercise[];
-      overallRating: number;
-      notes: string;
-      caloriesBurned: number;
-    }>
-  ): WorkoutSession {
+  public update(updates: UpdateWorkoutSessionParams): WorkoutSession {
     return new WorkoutSession(
       this.id,
       this.userId,
@@ -121,7 +136,7 @@ export class WorkoutSession extends BaseEntity {
       updates.exercises ?? this.exercises,
       updates.overallRating ?? this.overallRating,
       updates.notes ?? this.notes,
-      updates.caloriesBurned ?? this.caloriesBurned
+      updates.caloriesBurned ?? this.caloriesBurned,
     );
   }
 
@@ -138,7 +153,7 @@ export class WorkoutSession extends BaseEntity {
     exercises: SessionExercise[],
     overallRating?: number,
     notes?: string,
-    caloriesBurned?: number
+    caloriesBurned?: number,
   ): WorkoutSession {
     return this.update({
       endTime,
@@ -180,7 +195,7 @@ export class WorkoutSession extends BaseEntity {
   }): WorkoutSession {
     const updatedExercises = [...this.exercises];
     const exerciseIndex = updatedExercises.findIndex(
-      ex => ex.exerciseId === data.exerciseId
+      ex => ex.exerciseId === data.exerciseId,
     );
 
     if (exerciseIndex >= 0) {
@@ -214,7 +229,7 @@ export class WorkoutSession extends BaseEntity {
   public getCompletionPercentage(): number {
     if (this.exercises.length === 0) return 0;
     const completedExercises = this.exercises.filter(
-      exercise => exercise.completedSets.length >= exercise.plannedSets
+      exercise => exercise.completedSets.length >= exercise.plannedSets,
     );
     return (completedExercises.length / this.exercises.length) * 100;
   }
@@ -222,7 +237,7 @@ export class WorkoutSession extends BaseEntity {
   public getTotalSetsCompleted(): number {
     return this.exercises.reduce(
       (total, exercise) => total + exercise.completedSets.length,
-      0
+      0,
     );
   }
 

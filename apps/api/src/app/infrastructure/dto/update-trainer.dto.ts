@@ -1,4 +1,12 @@
-import { IsString, IsArray, IsNumber, IsObject, IsOptional, Min, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -23,17 +31,26 @@ class AvailabilityDto {
   @Type(() => DayAvailabilityDto)
   monday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Tuesday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Tuesday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   tuesday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Wednesday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Wednesday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   wednesday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Thursday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Thursday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   thursday: DayAvailabilityDto;
@@ -43,7 +60,10 @@ class AvailabilityDto {
   @Type(() => DayAvailabilityDto)
   friday: DayAvailabilityDto;
 
-  @ApiProperty({ description: 'Saturday availability', type: DayAvailabilityDto })
+  @ApiProperty({
+    description: 'Saturday availability',
+    type: DayAvailabilityDto,
+  })
   @ValidateNested()
   @Type(() => DayAvailabilityDto)
   saturday: DayAvailabilityDto;
@@ -70,13 +90,21 @@ export class UpdateTrainerDto {
   @IsString()
   phone?: string;
 
-  @ApiProperty({ description: 'Specializations', type: [String], required: false })
+  @ApiProperty({
+    description: 'Specializations',
+    type: [String],
+    required: false,
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   specializations?: string[];
 
-  @ApiProperty({ description: 'Years of experience', minimum: 0, required: false })
+  @ApiProperty({
+    description: 'Years of experience',
+    minimum: 0,
+    required: false,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -88,7 +116,11 @@ export class UpdateTrainerDto {
   @Min(0)
   hourlyRate?: number;
 
-  @ApiProperty({ description: 'Weekly availability', type: AvailabilityDto, required: false })
+  @ApiProperty({
+    description: 'Weekly availability',
+    type: AvailabilityDto,
+    required: false,
+  })
   @IsOptional()
   @IsObject()
   @ValidateNested()

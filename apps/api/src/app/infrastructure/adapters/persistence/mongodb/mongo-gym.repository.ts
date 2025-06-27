@@ -49,7 +49,7 @@ export class MongoGymRepository implements GymRepository {
       maxCapacity: gym.maxCapacity,
       isActive: gym.isActive,
     });
-    
+
     const savedGym = await gymDoc.save();
     return this.toDomain(savedGym);
   }
@@ -58,11 +58,11 @@ export class MongoGymRepository implements GymRepository {
     const updatedGym = await this.gymModel
       .findByIdAndUpdate(id, gymData, { new: true })
       .exec();
-    
+
     if (!updatedGym) {
       throw new Error(`Gym with id ${id} not found`);
     }
-    
+
     return this.toDomain(updatedGym);
   }
 
@@ -70,16 +70,23 @@ export class MongoGymRepository implements GymRepository {
     await this.gymModel.findByIdAndDelete(id).exec();
   }
 
-  async findByCapacityRange(minCapacity: number, maxCapacity: number): Promise<Gym[]> {
+  async findByCapacityRange(
+    minCapacity: number,
+    maxCapacity: number,
+  ): Promise<Gym[]> {
     const gyms = await this.gymModel
       .find({
-        maxCapacity: { $gte: minCapacity, $lte: maxCapacity }
+        maxCapacity: { $gte: minCapacity, $lte: maxCapacity },
       })
       .exec();
     return gyms.map(this.toDomain);
   }
 
-  async isWithinOperatingHours(gymId: string, day: string, time: string): Promise<boolean> {
+  async isWithinOperatingHours(
+    gymId: string,
+    day: string,
+    time: string,
+  ): Promise<boolean> {
     const gym = await this.findById(gymId);
     return gym ? gym.isOpenAt(day, time) : false;
   }

@@ -1,4 +1,11 @@
-import { IsString, IsArray, IsObject, IsBoolean, ValidateNested, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsArray,
+  IsObject,
+  IsBoolean,
+  ValidateNested,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -61,14 +68,22 @@ export class UpdateWorkoutPlanDto {
   @IsString()
   difficulty?: string;
 
-  @ApiProperty({ description: 'Workout exercises', type: [WorkoutExerciseDto], required: false })
+  @ApiProperty({
+    description: 'Workout exercises',
+    type: [WorkoutExerciseDto],
+    required: false,
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => WorkoutExerciseDto)
   exercises?: WorkoutExerciseDto[];
 
-  @ApiProperty({ description: 'Workout schedule', type: WorkoutScheduleDto, required: false })
+  @ApiProperty({
+    description: 'Workout schedule',
+    type: WorkoutScheduleDto,
+    required: false,
+  })
   @IsOptional()
   @IsObject()
   @ValidateNested()
